@@ -16,7 +16,9 @@ main()
  io_init();
  cards_init();
  io_printcard(0, 0, 0, 0);
- io_printcard(0, 10, 0, 1);
+ io_printcard(0, 4, 2, 14);
+ io_printcard(0, 10, 2, 3);
+ io_printcard(31, 0, 1, 12);
  io_getkey();
  halt();
 }

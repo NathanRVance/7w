@@ -71,7 +71,7 @@ void cards_updatecoupons()
 void cards_setname(int era, int card, char *name, int type)
 {
  int i;
- for(i = 0; (cards[era][card][i+1+NUMRESOURCES+NUMPRODUCTS+4] = name[i]) != '\0'; i++);
+ for(i = 0; (cards[era][card][i+1+NUMRESOURCES+NUMPRODUCTS+8] = name[i]) != '\0'; i++);
  cards_settype(era, card, type);
 }
 
@@ -79,8 +79,28 @@ char* cards_getname(int era, int card)
 {
  char *ret = get_chararray(26);
  int i;
- for(i = 0; (ret[i] = cards[era][card][i+1+NUMRESOURCES+NUMPRODUCTS+4]) != '\0'; i++);
+ for(i = 0; (ret[i] = cards[era][card][i+1+NUMRESOURCES+NUMPRODUCTS+8]) != '\0'; i++);
  return ret;
+}
+
+char* getname(int res)
+{
+ switch(res) {
+  case WOOD: return "wood";
+  case STONE: return "stone";
+  case CLAY: return "clay";
+  case ORE: return "ore";
+  case CLOTH: return "cloth";
+  case GLASS: return "glass";
+  case PAPER: return "paper";
+  case GOLD: return "gold";
+  case COMPASS: return "compass";
+  case GEAR: return "gear";
+  case TABLET: return "tablet";
+  case SHIELD: return "shield";
+  case VP: return "vp";
+  default: return "error";
+ }
 }
 
 void cards_init()
