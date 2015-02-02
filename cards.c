@@ -53,6 +53,26 @@ void cards_setcoupons(int era, int card, int era1, int card1, int era2, int card
  cards[era][card][i++] = card2;
 }
 
+//returns the cards this card is a coupon for
+int* cards_getcoupons(int era, int card)
+{
+ int *ret = get_intarray(4);
+ int i;
+ for(i = 0; i < 4; i++)
+  ret[i] = cards[era][card][1+NUMRESOURCES+NUMPRODUCTS+i];
+ return ret;
+}
+
+//returns cards that make this card free
+int* cards_getcouponed(int era, int card)
+{
+ int *ret = get_intarray(4);
+ int i;
+ for(i = 0; i < 4; i++)
+  ret[i] = cards[era][card][1+NUMRESOURCES+NUMPRODUCTS+4+i];
+ return ret;
+}
+
 void cards_updatecoupons()
 {
  int i, j, k;
