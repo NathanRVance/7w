@@ -8,6 +8,8 @@ int cards_gettype(int era, int card);
 int* cards_getproduction(int era, int card);
 char* getname(int res);
 int gettypecolor(int type);
+int* cards_getcoupons(int era, int card);
+int* cards_getcouponed(int era, int card);
 
 void io_init()
 {
@@ -59,28 +61,59 @@ int c;
  }
 }
 
-void io_printcard(int x, int y, int era, int card)
+void io_printname(int x, int y, int era, int card)
 {
- mvprintw(y++, x, "################################");
- mvprintw(y++, x, "# ");
+ mvprintw(y, x, "# ");
  attron(COLOR_PAIR(gettypecolor(cards_gettype(era, card))));
- printw("%-28s", cards_getname(era, card));
+ printw("%-24s", cards_getname(era, card));
  attrset(A_NORMAL);
  printw(" #");
- mvprintw(y++, x, "# Cost (and): | Products (or): #");
+}
+
+void io_printcard(int x, int y, int era, int card)
+{
+ mvprintw(y++, x, "############################");
+ io_printname(x, y++, era, card);
+ mvprintw(y++, x, "# Costs:   | Produces:     #");
  int *costs = cards_getcost(era, card);
  int *products = cards_getproduction(era, card);
- int i, j;
+ int i, j, k;
  i = j = -1;
  while(i < NUMRESOURCES || j < NUMPRODUCTS) {
   while(i < NUMRESOURCES && costs[++i] == 0);
   while(j < NUMPRODUCTS && products[++j] == 0);
   if(i == NUMRESOURCES && j == NUMPRODUCTS) break;
   mvprintw(y++, x, "# ");
-  if(i < NUMRESOURCES) printw(" %d %-9s| ", costs[i], getname(i));
-  else printw("            | ");
-  if(j < NUMPRODUCTS) printw(" %d %-11s #", products[j], getname(j));
-  else printw("               #");
+  if(i < NUMRESOURCES) printw(" %d %-6s| ", costs[i], getname(i));
+  else printw("         | ");
+  int isFinal = 1;
+  for(k = j+1; k < NUMPRODUCTS; k++)
+   if(products[k]) isFinal = 0;
+  if(j < NUMPRODUCTS)
+   if(isFinal) printw(" %d %-10s #", products[j], getname(j));
+   else printw(" %d %-7s or #", products[j], getname(j));
+  else printw("              #");
  }
- mvprintw(y++, x, "################################");
+ 
+ int* coupons = cards_getcoupons(era, card);
+ if(coupons[1] || coupons[3])
+ { //print the coupons!
+  mvprintw(y++, x, "# Coupon for:              #");
+  if(coupons[1] != 0)
+   io_printname(x, y++, coupons[0], coupons[1]);
+  if(coupons[3] != 0)
+   io_printname(x, y++, coupons[2], coupons[3]);
+ }
+
+ coupons = cards_getcouponed(era, card);
+ if(coupons[0] || coupons[2])
+ { //print the coupons!
+  mvprintw(y++, x, "# Free if owned:           #");
+  if(coupons[0] != 0)
+   io_printname(x, y++, coupons[0], coupons[1]);
+  if(coupons[2] != 0)
+   io_printname(x, y++, coupons[2], coupons[3]);
+ } 
+ 
+ mvprintw(y++, x, "############################");
 }

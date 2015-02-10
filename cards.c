@@ -1,5 +1,11 @@
 #include "7w.h"
 
+#define STARTCOST 1
+#define STARTPRODUCTION 1+NUMRESOURCES
+#define STARTCOUPONS 1+NUMRESOURCES+NUMPRODUCTS
+#define STARTCOUPONED 1+NUMRESOURCES+NUMPRODUCTS+4
+
+
 char* get_chararray(int size);
 int* get_intarray(int size);
 
@@ -9,20 +15,20 @@ static int cards[3][CARDSPERERA][60];
 
 void cards_setcost(int era, int card, int res, int num)
 {
- cards[era][card][res+1] = num;
+ cards[era][card][STARTCOST+res] = num;
 }
 
 int* cards_getcost(int era, int card)
 {
  int *ret = get_intarray(NUMRESOURCES);
  int i;
- for(i = 0; i < NUMRESOURCES; i++) ret[i] = cards[era][card][i+1];
+ for(i = 0; i < NUMRESOURCES; i++) ret[i] = cards[era][card][STARTCOST+i];
  return ret;
 }
 
 void cards_setproduction(int era, int card, int res, int num)
 {
- cards[era][card][res+1+NUMRESOURCES] = num;
+ cards[era][card][STARTPRODUCTION+res] = num;
 }
 
 int* cards_getproduction(int era, int card)
@@ -30,7 +36,7 @@ int* cards_getproduction(int era, int card)
  int *ret = get_intarray(NUMPRODUCTS);
  int i;
  for(i = 0; i < NUMPRODUCTS; i++)
-  ret[i] = cards[era][card][i+1+NUMRESOURCES];
+  ret[i] = cards[era][card][STARTPRODUCTION+i];
  return ret;
 }
 
@@ -46,7 +52,7 @@ int cards_gettype(int era, int card)
 
 void cards_setcoupons(int era, int card, int era1, int card1, int era2, int card2)
 {
- int i = 1+NUMRESOURCES+NUMPRODUCTS;
+ int i = STARTCOUPONS;
  cards[era][card][i++] = era1;
  cards[era][card][i++] = card1;
  cards[era][card][i++] = era2;
@@ -59,7 +65,7 @@ int* cards_getcoupons(int era, int card)
  int *ret = get_intarray(4);
  int i;
  for(i = 0; i < 4; i++)
-  ret[i] = cards[era][card][1+NUMRESOURCES+NUMPRODUCTS+i];
+  ret[i] = cards[era][card][STARTCOUPONS+i];
  return ret;
 }
 
@@ -69,19 +75,26 @@ int* cards_getcouponed(int era, int card)
  int *ret = get_intarray(4);
  int i;
  for(i = 0; i < 4; i++)
-  ret[i] = cards[era][card][1+NUMRESOURCES+NUMPRODUCTS+4+i];
+  ret[i] = cards[era][card][STARTCOUPONED+i];
  return ret;
 }
 
 void cards_updatecoupons()
 {
  int i, j, k;
+ int* card;
  for(i = 0; i <= 1; i++) {
   for(j = 0; j < CARDSPERERA; j++) {
-   for(k = 1+NUMRESOURCES+NUMPRODUCTS; k <= 3+NUMRESOURCES+NUMPRODUCTS; k += 2) {
+   for(k = STARTCOUPONS; k <= STARTCOUPONS+2; k += 2) {
     if(cards[i][j][k] != 0) {
-     cards[cards[i][j][k]][cards[i][j][k+1]][k+4] = i;
-     cards[cards[i][j][k]][cards[i][j][k+1]][k+5] = j;
+     card = cards[cards[i][j][k]][cards[i][j][k+1]];
+     if(card[STARTCOUPONED+1]) {
+      card[STARTCOUPONED+2] = i;
+      card[STARTCOUPONED+3] = j;
+     } else {
+      card[STARTCOUPONED+0] = i;
+      card[STARTCOUPONED+1] = j;
+     }
     }
    }
   }
