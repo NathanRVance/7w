@@ -10,6 +10,7 @@ char* getname(int res);
 int gettypecolor(int type);
 int* cards_getcoupons(int era, int card);
 int* cards_getcouponed(int era, int card);
+char* cards_specialmessage(int era, int card);
 
 void io_init()
 {
@@ -61,6 +62,11 @@ int c;
  }
 }
 
+void io_clearscreen()
+{
+ clear();
+}
+
 void io_printname(int x, int y, int era, int card)
 {
  mvprintw(y, x, "#  ");
@@ -70,30 +76,73 @@ void io_printname(int x, int y, int era, int card)
  printw(" #");
 }
 
+io_printblankline(int x, int y, int width)
+{
+ int i;
+ mvprintw(y, x, "#");
+ for(i = 0; i < width-1; i++) printw(" ");
+ printw("#");
+}
+
+io_printtext(int xorigin, int y, int width, char* text)
+{
+ width -= 2; //padding
+ int x = xorigin+2;
+ int wordlength;
+ int wordstart = 0;
+ int i;
+ //start with a cleared line
+ io_printblankline(xorigin, y, width);
+ while(text[wordstart] != '\0') {
+  wordlength = 0;
+  while(text[wordstart+(wordlength++)] != ' ' && text[wordstart+wordlength] != '\0');
+  if(x-xorigin+wordlength > width) {
+   io_printblankline(xorigin, ++y, width);
+   x = xorigin+2;
+  }
+  mvprintw(y, x, "");
+  for(i = wordstart; i < wordstart+wordlength; i++) addch(text[i]);
+  x += wordlength;
+  wordstart += wordlength;
+ }
+ return y+1;
+}
+
 void io_printcard(int x, int y, int era, int card)
 {
  mvprintw(y++, x, "############################");
  io_printname(x, y++, era, card);
- mvprintw(y++, x, "# Costs:   | Produces:     #");
  int *costs = cards_getcost(era, card);
  int *products = cards_getproduction(era, card);
+ int hasCP = 0;
  int i, j, k;
- i = j = -1;
- while(i < NUMRESOURCES || j < NUMPRODUCTS) {
-  while(i < NUMRESOURCES && costs[++i] == 0);
-  while(j < NUMPRODUCTS && products[++j] == 0);
-  if(i == NUMRESOURCES && j == NUMPRODUCTS) break;
-  mvprintw(y++, x, "# ");
-  if(i < NUMRESOURCES) printw(" %d %-6s| ", costs[i], getname(i));
-  else printw("         | ");
-  int isFinal = 1;
-  for(k = j+1; k < NUMPRODUCTS; k++)
-   if(products[k]) isFinal = 0;
-  if(j < NUMPRODUCTS)
-   if(isFinal) printw(" %d %-10s #", products[j], getname(j));
-   else printw(" %d %-7s or #", products[j], getname(j));
-  else printw("              #");
+ for(i = 0; i < NUMRESOURCES; i++)
+  if(costs[i] > 0) hasCP = 1;
+ for(i = 0; i < NUMPRODUCTS; i++)
+  if(products[i] > 0) hasCP = 1;
+ if(hasCP) {
+  mvprintw(y++, x, "# Costs:   | Produces:     #");
+  i = j = -1;
+  while(i < NUMRESOURCES || j < NUMPRODUCTS) {
+   while(i < NUMRESOURCES && costs[++i] == 0);
+   while(j < NUMPRODUCTS && products[++j] == 0);
+   if(i == NUMRESOURCES && j == NUMPRODUCTS) break;
+   mvprintw(y++, x, "# ");
+   if(i < NUMRESOURCES) printw(" %d %-6s| ", costs[i], getname(i));
+   else printw("         | ");
+   int isFinal = 1;
+   for(k = j+1; k < NUMPRODUCTS; k++)
+    if(products[k]) isFinal = 0;
+   if(j < NUMPRODUCTS)
+    if(isFinal) printw(" %d %-10s #", products[j], getname(j));
+    else printw(" %d %-7s or #", products[j], getname(j));
+   else printw("              #");
+  }
  }
+
+ char* message = cards_specialmessage(era, card);
+ if(message[0] != '\0')
+  y = io_printtext(x, y, 29, message);
  
  int* coupons = cards_getcoupons(era, card);
  if(coupons[1] || coupons[3])

@@ -4,14 +4,14 @@
 #define STARTPRODUCTION 1+NUMRESOURCES
 #define STARTCOUPONS 1+NUMRESOURCES+NUMPRODUCTS
 #define STARTCOUPONED 1+NUMRESOURCES+NUMPRODUCTS+4
-
+#define STARTNAME 1+NUMRESOURCES+NUMPRODUCTS+8
+#define STARTDESCRIPTION STARTNAME+25
 
 char* get_chararray(int size);
 int* get_intarray(int size);
 
 //era, card#, resource cost / resource production / coupons / couponed by / card name
-#define CARDSPERERA 30
-static int cards[3][CARDSPERERA][60];
+static int cards[3][CARDSPERERA][200];
 
 void cards_setcost(int era, int card, int res, int num)
 {
@@ -86,7 +86,7 @@ void cards_updatecoupons()
  for(i = 0; i <= 1; i++) {
   for(j = 0; j < CARDSPERERA; j++) {
    for(k = STARTCOUPONS; k <= STARTCOUPONS+2; k += 2) {
-    if(cards[i][j][k] != 0) {
+    if(cards[i][j][k]) {
      card = cards[cards[i][j][k]][cards[i][j][k+1]];
      if(card[STARTCOUPONED+1]) {
       card[STARTCOUPONED+2] = i;
@@ -104,7 +104,7 @@ void cards_updatecoupons()
 void cards_setname(int era, int card, char *name, int type)
 {
  int i;
- for(i = 0; (cards[era][card][i+1+NUMRESOURCES+NUMPRODUCTS+8] = name[i]) != '\0'; i++);
+ for(i = 0; (cards[era][card][STARTNAME+i] = name[i]) != '\0'; i++);
  cards_settype(era, card, type);
 }
 
@@ -112,7 +112,21 @@ char* cards_getname(int era, int card)
 {
  char *ret = get_chararray(26);
  int i;
- for(i = 0; (ret[i] = cards[era][card][i+1+NUMRESOURCES+NUMPRODUCTS+8]) != '\0'; i++);
+ for(i = 0; (ret[i] = cards[era][card][STARTNAME+i]) != '\0'; i++);
+ return ret;
+}
+
+void cards_setmessage(int era, int card, char *message)
+{
+ int i;
+ for(i = 0; (cards[era][card][STARTDESCRIPTION+i] = message[i]) != '\0'; i++);
+}
+
+char* cards_specialmessage(int era, int card)
+{
+ char *ret = get_chararray(100);
+ int i;
+ for(i = 0; (ret[i] = cards[era][card][STARTDESCRIPTION+i]) != '\0'; i++);
  return ret;
 }
 
@@ -210,12 +224,15 @@ void cards_init()
  cards_setname(0, 17, "Tavern", COMMERCIAL);
 
  cards_setcoupons(0, 18, 1, 11, 0, 0);
+ cards_setmessage(0, 18, "Can trade 1 coin for resources with player to the LEFT.");
  cards_setname(0, 18, "East Trading Post", COMMERCIAL);
 
  cards_setcoupons(0, 19, 1, 11, 0, 0);
+ cards_setmessage(0, 19, "Can trade 1 coin for resources with player to the RIGHT.");
  cards_setname(0, 19, "West Trading Post", COMMERCIAL);
 
  cards_setcoupons(0, 20, 1, 12, 0, 0);
+ cards_setmessage(0, 20, "Can trade 1 coin for industry products with adjacent players.");
  cards_setname(0, 20, "Marketplace", COMMERCIAL);
 
  cards_setcost(0, 21, WOOD, 1);
@@ -308,8 +325,10 @@ void cards_init()
  cards_setcoupons(1, 12, 2, 6, 0, 0);
  cards_setname(1, 12, "Caravansery", COMMERCIAL);
 
+ cards_setmessage(1, 13, "1 coin for each resource card of adjacent players or your own.");
  cards_setname(1, 13, "Vineyard", COMMERCIAL);
 
+ cards_setmessage(1, 14, "2 coins for each industry card of adjacent players or your own.");
  cards_setname(1, 14, "Bazar", COMMERCIAL);
 
  cards_setcost(1, 15, STONE, 3);
@@ -397,18 +416,22 @@ void cards_init()
  cards_setcost(2, 5, ORE, 1);
  cards_setcost(2, 5, WOOD, 1);
  cards_setcost(2, 5, CLOTH, 1);
+ cards_setmessage(2, 7, "1 coin and 1 vp for each resource card.");
  cards_setname(2, 5, "Haven", COMMERCIAL);
 
  cards_setcost(2, 6, STONE, 1);
  cards_setcost(2, 6, GLASS, 1);
+ cards_setmessage(2, 7, "1 coin and 1 vp for each commercial card.");
  cards_setname(2, 6, "Lighthouse", COMMERCIAL);
 
  cards_setcost(2, 7, CLAY, 2);
  cards_setcost(2, 7, PAPER, 1);
+ cards_setmessage(2, 7, "2 coins and 2 vps for each industrial card.");
  cards_setname(2, 7, "Chamber Of Commerce", COMMERCIAL);
 
  cards_setcost(2, 8, STONE, 2);
  cards_setcost(2, 8, ORE, 1);
+ cards_setmessage(2, 8, "3 coins and 1 vp for each completed wonder stage.");
  cards_setname(2, 8, "Arena", COMMERCIAL);
 
  cards_setcost(2, 9, ORE, 3);
@@ -465,49 +488,59 @@ void cards_init()
  cards_setcost(2, 18, CLAY, 1);
  cards_setcost(2, 18, STONE, 1);
  cards_setcost(2, 18, WOOD, 1);
+ cards_setmessage(2, 18, "1 vp for each resource card owned by adjacent players.");
  cards_setname(2, 18, "Workers Guild", GUILD);
 
  cards_setcost(2, 19, ORE, 2);
  cards_setcost(2, 19, STONE, 2);
+ cards_setmessage(2, 19, "2 vps for each industrial card owned by adjacent players.");
  cards_setname(2, 19, "Craftmens Guild", GUILD);
 
  cards_setcost(2, 20, CLOTH, 1);
  cards_setcost(2, 20, PAPER, 1);
  cards_setcost(2, 20, GLASS, 1);
+ cards_setmessage(2, 20, "1 vp for each commercial card owned by adjacent players.");
  cards_setname(2, 20, "Traders Guild", GUILD);
 
  cards_setcost(2, 21, CLAY, 3);
  cards_setcost(2, 21, CLOTH, 1);
  cards_setcost(2, 21, PAPER, 1);
+ cards_setmessage(2, 21, "1 vp for each scientific card owned by adjacent players.");
  cards_setname(2, 21, "Philosophers Guild", GUILD);
 
  cards_setcost(2, 22, CLAY, 3);
  cards_setcost(2, 22, GLASS, 1);
+ cards_setmessage(2, 22, "1 vp for each military card owned by adjacent players.");
  cards_setname(2, 22, "Spy Guild", GUILD);
 
  cards_setcost(2, 23, ORE, 2);
  cards_setcost(2, 23, STONE, 1);
  cards_setcost(2, 23, CLOTH, 1);
+ cards_setmessage(2, 23, "1 vp for each military defeat by adjacent players.");
  cards_setname(2, 23, "Strategy Guild", GUILD);
 
  cards_setcost(2, 24, WOOD, 3);
  cards_setcost(2, 24, PAPER, 1);
  cards_setcost(2, 24, GLASS, 1);
+ cards_setmessage(2, 24, "1 vp for each resource, industrial, and guild card.");
  cards_setname(2, 24, "Shipowners Guild", GUILD);
 
  cards_setcost(2, 25, WOOD, 2);
  cards_setcost(2, 25, ORE, 2);
  cards_setcost(2, 25, CLOTH, 1);
+ cards_setmessage(2, 25, "Counts as either a compass, gear or tablet.");
  cards_setname(2, 25, "Scientists Guild", GUILD);
 
  cards_setcost(2, 26, WOOD, 3);
  cards_setcost(2, 26, STONE, 1);
  cards_setcost(2, 26, CLOTH, 1);
+ cards_setmessage(2, 26, "1 vp for each structure card.");
  cards_setname(2, 26, "Magistrates Guild", GUILD);
 
  cards_setcost(2, 27, STONE, 2);
  cards_setcost(2, 27, CLAY, 2);
  cards_setcost(2, 27, GLASS, 1);
+ cards_setmessage(2, 27, "1 vp for each completed wonder stage by you or adjacent players.");
  cards_setname(2, 27, "Builders Guild", GUILD);
 
  cards_updatecoupons();

@@ -1,3 +1,5 @@
+#define CARDSPERERA 30
+
 #define NUMRESOURCES 8
 #define WOOD  0
 #define STONE 1
