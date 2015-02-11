@@ -63,9 +63,9 @@ int c;
 
 void io_printname(int x, int y, int era, int card)
 {
- mvprintw(y, x, "# ");
+ mvprintw(y, x, "#  ");
  attron(COLOR_PAIR(gettypecolor(cards_gettype(era, card))));
- printw("%-24s", cards_getname(era, card));
+ printw("%-23s", cards_getname(era, card));
  attrset(A_NORMAL);
  printw(" #");
 }
@@ -99,19 +99,19 @@ void io_printcard(int x, int y, int era, int card)
  if(coupons[1] || coupons[3])
  { //print the coupons!
   mvprintw(y++, x, "# Coupon for:              #");
-  if(coupons[1] != 0)
+  if(coupons[1])
    io_printname(x, y++, coupons[0], coupons[1]);
-  if(coupons[3] != 0)
+  if(coupons[3])
    io_printname(x, y++, coupons[2], coupons[3]);
  }
 
  coupons = cards_getcouponed(era, card);
- if(coupons[0] || coupons[2])
+ if(coupons[1] || coupons[3])
  { //print the coupons!
   mvprintw(y++, x, "# Free if owned:           #");
-  if(coupons[0] != 0)
+  if(coupons[1])
    io_printname(x, y++, coupons[0], coupons[1]);
-  if(coupons[2] != 0)
+  if(coupons[3])
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
  
