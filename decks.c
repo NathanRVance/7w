@@ -24,9 +24,12 @@ void shuffle(int *deck, int n)
  int scratch[n];
  int i = 0;
  int size = n;
+ int k;
  srand(time(NULL));
  while(n) {
-  scratch[i++] = deck[rand()%n];
+  k = rand()%n;
+  scratch[i++] = deck[k];
+  for(; k < n-1; k++) deck[k] = deck[k+1];
   n--;
  }
  for(i = 0; i < size; i++) deck[i] = scratch[i];
@@ -35,4 +38,23 @@ void shuffle(int *deck, int n)
 int* getdeck(int era, int numplayers)
 {
  int *ret = get_intarray(numplayers*7);
+ int guilds[10];
+ int i, j;
+ switch(era) {
+  case 0:
+   for(i = 0; i < numplayers*7; i++) ret[i] = era1[i];
+  break;
+  case 1:
+   for(i = 0; i < numplayers*7; i++) ret[i] = era2[i];
+  break;
+  case 2:
+   for(i = 0; i < 10; i++) guilds[i] = i+18;
+   shuffle(guilds, 10);
+   for(i = 0; i < numplayers*6-1; i++) ret[i] = era3[i];
+   for(j = 0; i < numplayers*7; i++, j++) ret[i] = guilds[j];
+  break;
+  default: break;
+ }
+ shuffle(ret, numplayers*7);
+ return ret;
 }

@@ -6,6 +6,7 @@ void cards_init();
 void io_printcard(int x, int y, int era, int card);
 void cardtour();
 void io_clearscreen();
+int* getdeck(int era, int numplayers);
 
 void halt()
 {
@@ -31,11 +32,17 @@ void cardtour()
 {
  int era, card;
  era = card = 0;
+ int deckpos = 0;
+ int numplayers = 4;
+ int *decks[3];
+ decks[0] = getdeck(0, numplayers);
+ decks[1] = getdeck(1, numplayers);
+ decks[2] = getdeck(2, numplayers);
  while(1) {
   io_clearscreen();
-  io_printcard(0, 0, era, card);
+  io_printcard(0, 0, era, decks[era][card]);
   switch(io_getkey()) {
-   case DOWN: if(card < CARDSPERERA-1) card++;
+   case DOWN: if(card < numplayers*7) card++;
     break;
    case UP: if(card > 0) card--;
     break;

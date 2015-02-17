@@ -10,8 +10,8 @@
 char* get_chararray(int size);
 int* get_intarray(int size);
 
-//era, card#, resource cost / resource production / coupons / couponed by / card name
-static int cards[3][CARDSPERERA][200];
+//era, card#, resource cost / resource production / coupons / couponed by / card name / description
+static int cards[3][CARDSPERERA][300];
 
 void cards_setcost(int era, int card, int res, int num)
 {
@@ -84,7 +84,7 @@ void cards_updatecoupons()
  int i, j, k;
  int* card;
  for(i = 0; i <= 1; i++) {
-  for(j = 0; j < CARDSPERERA; j++) {
+  for(j = 0; j < 27-4*i; j++) {
    for(k = STARTCOUPONS; k <= STARTCOUPONS+2; k += 2) {
     if(cards[i][j][k]) {
      card = cards[cards[i][j][k]][cards[i][j][k+1]];
@@ -124,7 +124,7 @@ void cards_setmessage(int era, int card, char *message)
 
 char* cards_specialmessage(int era, int card)
 {
- char *ret = get_chararray(100);
+ char *ret = get_chararray(200);
  int i;
  for(i = 0; (ret[i] = cards[era][card][STARTDESCRIPTION+i]) != '\0'; i++);
  return ret;
