@@ -11,6 +11,8 @@ int gettypecolor(int type);
 int* cards_getcoupons(int era, int card);
 int* cards_getcouponed(int era, int card);
 char* cards_specialmessage(int era, int card);
+int data_getera();
+int* data_gethand(int p);
 
 void io_init()
 {
@@ -164,5 +166,18 @@ void io_printcard(int x, int y, int era, int card)
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
  
+ mvprintw(y++, x, "############################");
+}
+
+void io_printhand(int x, int y, int player, int cursor)
+{
+ int *hand = data_gethand(player);
+ int i;
+ mvprintw(y++, x, "############################");
+ for(i = 0; hand[i] != -1 && i < 7; i++) {
+  io_printname(x, y++, data_getera(), hand[i]);
+  if(i == cursor) mvprintw(y-1, x+25, "*");
+  refresh();
+ }
  mvprintw(y++, x, "############################");
 }

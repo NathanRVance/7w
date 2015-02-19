@@ -7,6 +7,8 @@ void io_printcard(int x, int y, int era, int card);
 void cardtour();
 void io_clearscreen();
 int* getdeck(int era, int numplayers);
+void data_init(int num_players);
+void player_turn(int player);
 
 void halt()
 {
@@ -18,7 +20,9 @@ main()
 {
  io_init();
  cards_init();
- cardtour();
+ data_init(4);
+// cardtour();
+ player_turn(1);
  halt();
 }
 

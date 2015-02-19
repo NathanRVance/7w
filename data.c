@@ -3,6 +3,7 @@
 int* getdeck(int era, int numplayers);
 int* cards_getproduction(int era, int card);
 int* get_intarray(int size);
+void array_cpy(int *a, int *b, int len); //copies b to a
 
 #define MISC 3
 #define DATAGOLD 0
@@ -11,20 +12,12 @@ static int decks[3][49];
 static int player[7][4][7]; //3 eras and extra stuff (gold, military wins/defeats, etc.)
 static int hands[7][7];
 static int numplayers;
+static int era;
 
-void data_init(int n)
+void data_nextera()
 {
- numplayers = n;
- int i, j, *deck;
- for(i = 0; i < 3; i++) {
-  deck = getdeck(i, numplayers);
-  for(j = 0; j < numplayers; j++)
-   decks[i][j] = deck[j];
- }
-}
-
-void data_startera(int era)
-{
+ if(era == 2) return;
+ era++;
  int i, j, k;
  k = 0;
  for(i = 0; i < numplayers; i++)
@@ -32,10 +25,59 @@ void data_startera(int era)
    hands[i][j] = decks[era][k++];
 }
 
-//0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
-int data_productiontype(int era, int card)
+void data_init(int n)
 {
- int *prod = cards_getproduction(era, card);
+ numplayers = n;
+ int i, j, *deck;
+ for(i = 0; i < 3; i++) {
+  deck = getdeck(i, numplayers);
+  for(j = 0; j < numplayers*7; j++)
+   decks[i][j] = deck[j];
+ }
+ era = -1;
+ data_nextera();
+}
+
+void data_passturn()
+{ //remember, player numbers are arranged clockwise
+ int buffer[7], i;
+ if(era == 0 || era == 2) { //pass to the left
+  array_cpy(buffer, hands[numplayers-1], 7);
+  for(i = numplayers-1; i > 0; i--) {
+   array_cpy(hands[i], hands[i-1], 7);
+  }
+  array_cpy(hands[0], buffer, 7);
+ } else { //pass to the right
+  array_cpy(buffer, hands[0], 7);
+  for(i = 0; i < numplayers-1; i++) {
+   array_cpy(hands[i], hands[i+1], 7);
+  }
+  array_cpy(hands[numplayers-1], buffer, 7);
+ }
+}
+
+int* data_gethand(int p)
+{
+ return hands[p];
+}
+
+int data_getera()
+{
+ return era;
+}
+
+void data_build(int p, int card)
+{
+ int i;
+ for(i = 0; hands[p][i] != card; i++);
+ for(; i < 7; i++) hands[p][i] = hands[p][i+1];
+ hands[p][7] = -1;
+}
+
+//0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
+int data_productiontype(int e, int card)
+{
+ int *prod = cards_getproduction(e, card);
  int i;
  int type = 0;
  for(i = 0; i < GOLD; i++) {
