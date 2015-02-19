@@ -11,7 +11,8 @@ char* get_chararray(int size);
 int* get_intarray(int size);
 
 //era, card#, resource cost / resource production / coupons / couponed by / card name / description
-static int cards[3][CARDSPERERA][300];
+static int cards[10][CARDSPERERA][300];
+//Final 7 'eras' are actually the wonders.
 
 void cards_setcost(int era, int card, int res, int num)
 {
@@ -110,7 +111,7 @@ void cards_setname(int era, int card, char *name, int type)
 
 char* cards_getname(int era, int card)
 {
- char *ret = get_chararray(26);
+ char *ret = get_chararray(40);
  int i;
  for(i = 0; (ret[i] = cards[era][card][STARTNAME+i]) != '\0'; i++);
  return ret;
@@ -139,7 +140,7 @@ char* getname(int res)
   case ORE: return "ore";
   case CLOTH: return "cloth";
   case GLASS: return "glass";
-  case PAPER: return "paper";
+  case PAPER: return "papyrus";
   case GOLD: return "gold";
   case COMPASS: return "compass";
   case GEAR: return "gear";
@@ -544,4 +545,133 @@ void cards_init()
  cards_setname(2, 27, "Builders Guild", GUILD);
 
  cards_updatecoupons();
+
+ cards_setname(3, 0, "The Colossus of Rhodes", ORE);
+ cards_setcost(3, 1, WOOD, 2);
+ cards_setproduction(3, 1, VP, 3);
+ cards_setcost(3, 2, CLAY, 3);
+ cards_setproduction(3, 2, SHIELD, 2);
+ cards_setcost(3, 3, ORE, 4);
+ cards_setproduction(3, 3, VP, 7);
+ cards_setcost(3, 4, STONE, 3);
+ cards_setproduction(3, 4, SHIELD, 1);
+ cards_setproduction(3, 4, VP, 3);
+ cards_setproduction(3, 4, GOLD, 3);
+ cards_setcost(3, 5, ORE, 4);
+ cards_setproduction(3, 5, SHIELD, 1);
+ cards_setproduction(3, 5, VP, 4);
+ cards_setproduction(3, 5, GOLD, 4);
+ 
+ cards_setname(4, 0, "The Lighthouse of Alexandria", GLASS);
+ cards_setcost(4, 1, STONE, 2);
+ cards_setproduction(4, 1, VP, 3);
+ cards_setcost(4, 2, ORE, 2);
+ cards_setproduction(4, 2, CLAY, 1);
+ cards_setproduction(4, 2, ORE, 1);
+ cards_setproduction(4, 2, WOOD, 1);
+ cards_setproduction(4, 2, STONE, 1);
+ cards_setcost(4, 3, GLASS, 2);
+ cards_setproduction(4, 3, VP, 7);
+ cards_setcost(4, 4, CLAY, 2);
+ cards_setproduction(4, 4, WOOD, 1);
+ cards_setproduction(4, 4, STONE, 1);
+ cards_setproduction(4, 4, ORE, 1);
+ cards_setproduction(4, 4, CLAY, 1);
+ cards_setcost(4, 5, WOOD, 2);
+ cards_setproduction(4, 5, GLASS, 1);
+ cards_setproduction(4, 5, CLOTH, 1);
+ cards_setproduction(4, 5, PAPER, 1);
+ cards_setcost(4, 6, STONE, 3);
+ cards_setproduction(4, 6, VP, 7);
+ 
+ cards_setname(5, 0, "The Temple of Artemis in Ephesus", PAPER);
+ cards_setcost(5, 1, STONE, 2);
+ cards_setproduction(5, 1, VP, 3);
+ cards_setcost(5, 2, WOOD, 2);
+ cards_setproduction(5, 2, GOLD, 9);
+ cards_setcost(5, 3, PAPER, 2);
+ cards_setproduction(5, 3, VP, 7);
+ cards_setcost(5, 4, STONE, 2);
+ cards_setproduction(5, 4, VP, 2);
+ cards_setproduction(5, 4, GOLD, 4);
+ cards_setcost(5, 5, WOOD, 2);
+ cards_setproduction(5, 5, VP, 3);
+ cards_setproduction(5, 5, GOLD, 4);
+ cards_setcost(5, 6, GLASS, 1);
+ cards_setcost(5, 6, CLOTH, 1);
+ cards_setcost(5, 6, PAPER, 1);
+ cards_setproduction(5, 6, VP, 5);
+ cards_setproduction(5, 6, GOLD, 4);
+
+ cards_setname(6, 0, "The Hanging Gardens of Babylon", CLAY);
+ cards_setcost(6, 1, CLAY, 2);
+ cards_setproduction(6, 1, VP, 3);
+ cards_setcost(6, 2, WOOD, 3);
+ cards_setproduction(6, 2, TABLET, 1);
+ cards_setproduction(6, 2, COMPASS, 1);
+ cards_setproduction(6, 2, GEAR, 1);
+ cards_setcost(6, 3, CLAY, 4);
+ cards_setproduction(6, 3, VP, 7);
+ cards_setcost(6, 4, CLAY, 1);
+ cards_setcost(6, 4, CLOTH, 1);
+ cards_setproduction(6, 4, VP, 3);
+ cards_setcost(6, 5, WOOD, 2);
+ cards_setcost(6, 5, GLASS, 1);
+ cards_setmessage(6, 5, "Can now play 7th age card rather than discarding it.");
+ cards_setcost(6, 6, CLAY, 3);
+ cards_setcost(6, 6, PAPER, 1);
+ cards_setproduction(6, 6, TABLET, 1);
+ cards_setproduction(6, 6, COMPASS, 1);
+ cards_setproduction(6, 6, GEAR, 1);
+
+ cards_setname(7, 0, "The Statue of Zeus in Olympia", WOOD);
+ cards_setcost(7, 1, WOOD, 2);
+ cards_setproduction(7, 1, VP, 3);
+ cards_setcost(7, 2, STONE, 2);
+ cards_setmessage(7, 2, "Once per age can build a card for free.");
+ cards_setcost(7, 3, ORE, 2);
+ cards_setproduction(7, 3, VP, 7);
+ cards_setcost(7, 4, WOOD, 2);
+ cards_setmessage(7, 4, "Can trade 1 coin for resources with adjacent players.");
+ cards_setcost(7, 5, STONE, 2);
+ cards_setproduction(7, 5, VP, 5);
+ cards_setcost(7, 6, ORE, 2);
+ cards_setcost(7, 6, CLOTH, 1);
+ cards_setmessage(7, 6, "Can copy one Guild card build by an adjacent player.");
+
+ cards_setname(8, 0, "The Mausoleum of Halicarnassus", CLOTH);
+ cards_setcost(8, 1, CLAY, 2);
+ cards_setproduction(8, 1, VP, 3);
+ cards_setcost(8, 2, ORE, 3);
+ cards_setmessage(8, 2, "Can look through all discards since the beginning of the game, pick one, and build it for free.");
+ cards_setcost(8, 3, CLOTH, 2);
+ cards_setproduction(8, 3, VP, 7);
+ cards_setcost(8, 4, ORE, 2);
+ cards_setproduction(8, 4, VP, 2);
+ cards_setmessage(8, 4, "Can look through all discards since the beginning of the game, pick one, and build it for free.");
+ cards_setcost(8, 5, CLAY, 3);
+ cards_setproduction(8, 5, VP, 1);
+ cards_setmessage(8, 5, "Can look through all discards since the beginning of the game, pick one, and build it for free.");
+ cards_setcost(8, 6, CLOTH, 1);
+ cards_setcost(8, 6, PAPER, 1);
+ cards_setcost(8, 6, GLASS, 1);
+ cards_setmessage(8, 6, "Can look through all discards since the beginning of the game, pick one, and build it for free.");
+
+ cards_setname(9, 0, "The Pyramids of Giza", STONE);
+ cards_setcost(9, 1, STONE, 2);
+ cards_setproduction(9, 1, VP, 3);
+ cards_setcost(9, 2, WOOD, 3);
+ cards_setproduction(9, 2, VP, 5);
+ cards_setcost(9, 3, STONE, 4);
+ cards_setproduction(9, 3, VP, 7);
+ cards_setcost(9, 4, WOOD, 2);
+ cards_setproduction(9, 4, VP, 3);
+ cards_setcost(9, 5, STONE, 3);
+ cards_setproduction(9, 5, VP, 5);
+ cards_setcost(9, 6, CLAY, 3);
+ cards_setproduction(9, 6, VP, 5);
+ cards_setcost(9, 7, STONE, 4);
+ cards_setcost(9, 7, PAPER, 1);
+ cards_setproduction(9, 7, VP, 7);
+ 
 }
