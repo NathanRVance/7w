@@ -140,7 +140,7 @@ char* getname(int res)
   case ORE: return "ore";
   case CLOTH: return "cloth";
   case GLASS: return "glass";
-  case PAPER: return "papyrus";
+  case PAPER: return "paper";
   case GOLD: return "gold";
   case COMPASS: return "compass";
   case GEAR: return "gear";

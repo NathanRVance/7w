@@ -9,6 +9,7 @@ void io_clearscreen();
 int* getdeck(int era, int numplayers);
 void data_init(int num_players);
 void player_turn(int player);
+void wonder_selected(int player);
 
 void halt()
 {
@@ -22,6 +23,7 @@ main()
  cards_init();
  data_init(4);
 // cardtour();
+ wonder_selected(0);
  player_turn(1);
  halt();
 }

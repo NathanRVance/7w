@@ -78,7 +78,7 @@ void io_printname(int x, int y, int era, int card)
  printw(" #");
 }
 
-io_printblankline(int x, int y, int width)
+void io_printblankline(int x, int y, int width)
 {
  int i;
  mvprintw(y, x, "#");
@@ -86,7 +86,7 @@ io_printblankline(int x, int y, int width)
  printw("#");
 }
 
-io_printtext(int xorigin, int y, int width, char* text)
+int io_printtext(int xorigin, int y, int width, char* text)
 {
  width -= 2; //padding
  int x = xorigin+2;
@@ -110,10 +110,16 @@ io_printtext(int xorigin, int y, int width, char* text)
  return y+1;
 }
 
+void io_printborder(int x, int y)
+{
+ mvprintw(y, x, "############################");
+}
+
 void io_printcard(int x, int y, int era, int card)
 {
- mvprintw(y++, x, "############################");
- io_printname(x, y++, era, card);
+ io_printborder(x, y++);
+ if(cards_getname(era, card)[0] != '\0')
+  io_printname(x, y++, era, card);
  int *costs = cards_getcost(era, card);
  int *products = cards_getproduction(era, card);
  int hasCP = 0;
@@ -136,7 +142,7 @@ void io_printcard(int x, int y, int era, int card)
    for(k = j+1; k < NUMPRODUCTS; k++)
     if(products[k]) isFinal = 0;
    if(j < NUMPRODUCTS)
-    if(isFinal) printw(" %d %-10s #", products[j], getname(j));
+    if(isFinal || j == GOLD || j == SHIELD || j == VP) printw(" %d %-10s #", products[j], getname(j));
     else printw(" %d %-7s or #", products[j], getname(j));
    else printw("              #");
   }
@@ -165,19 +171,19 @@ void io_printcard(int x, int y, int era, int card)
   if(coupons[3])
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
- 
- mvprintw(y++, x, "############################");
+
+ io_printborder(x, y++);
 }
 
 void io_printhand(int x, int y, int player, int cursor)
 {
  int *hand = data_gethand(player);
  int i;
- mvprintw(y++, x, "############################");
+ io_printborder(x, y++);
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   io_printname(x, y++, data_getera(), hand[i]);
   if(i == cursor) mvprintw(y-1, x+25, "*");
   refresh();
  }
- mvprintw(y++, x, "############################");
+ io_printborder(x, y++);
 }

@@ -1,15 +1,17 @@
 #include "7w.h"
+#include <time.h>
 
 int* getdeck(int era, int numplayers);
 int* cards_getproduction(int era, int card);
 int* get_intarray(int size);
 void array_cpy(int *a, int *b, int len); //copies b to a
+void shuffle(int *deck, int n);
 
 #define MISC 3
 #define DATAGOLD 0
 
 static int decks[3][49];
-static int player[7][4][7]; //3 eras and extra stuff (gold, military wins/defeats, etc.)
+static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats)
 static int hands[7][7];
 static int numplayers;
 static int era;
@@ -25,10 +27,23 @@ void data_nextera()
    hands[i][j] = decks[era][k++];
 }
 
+void data_distributewonders(int n)
+{
+ int i;
+ int wonders[7];
+ for(i = 0; i < 7; i++)
+  wonders[i] = i+3; //wonders are numbered 3-9
+ shuffle(wonders, 7);
+ for(i = 0; i < n; i++) {
+  player[i][3][0] = wonders[i];
+  player[i][3][1] = rand()%2;
+ }
+}
+
 void data_init(int n)
 {
  numplayers = n;
- int i, j, *deck;
+ int i, j, k, *deck;
  for(i = 0; i < 3; i++) {
   deck = getdeck(i, numplayers);
   for(j = 0; j < numplayers*7; j++)
@@ -36,6 +51,11 @@ void data_init(int n)
  }
  era = -1;
  data_nextera();
+ data_distributewonders(n);
+ for(i = 0; i < n; i++)
+  for(j = 0; j < 3; j++)
+   for(k = 0; k < 7; k++)
+    player[i][j][k] = -1;
 }
 
 void data_passturn()
@@ -66,12 +86,29 @@ int data_getera()
  return era;
 }
 
+int data_getwonder(int p)
+{
+ return player[p][3][0];
+}
+
+int data_getwonderside(int p)
+{
+ return player[p][3][1];
+}
+
+int data_getwonderstages(int p)
+{
+ return player[p][3][2];
+}
+
 void data_build(int p, int card)
 {
  int i;
  for(i = 0; hands[p][i] != card; i++);
  for(; i < 7; i++) hands[p][i] = hands[p][i+1];
  hands[p][7] = -1;
+ for(i = 0; player[p][era][i] != -1; i++);
+ player[p][era][i] = card;
 }
 
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
