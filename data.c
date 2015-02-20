@@ -212,15 +212,16 @@ int data_canafford(int p, int *cost)
 
 int* data_getbuilt(int p)
 {
- int *ret = get_intarray(42);
+ int *ret = get_intarray(43);
  int type, e, c;
  int i = 0;
  for(type = 0; type <= 7; type++)
   for(e = 0; e < 3; e++)
    for(c = 0; c < 7; c++)
-    if(cards_gettype(e, player[p][e][c]) == type) {
+    if(player[p][e][c] != -1 && cards_gettype(e, player[p][e][c]) == type) {
      ret[i++] = e;
      ret[i++] = player[p][e][c];
     }
+ ret[i] = -1; //Cap it here
  return ret;
 }

@@ -11,11 +11,13 @@ int data_getwonderside(int p);
 void io_printborder(int x, int y);
 int io_printtext(int xorigin, int y, int width, char* text);
 void io_printcard(int x, int y, int wonder, int stage);
+void io_printname(int x, int y, int era, int card);
 int data_getwonderstages(int p);
 char* cat(char a[], char b[]);
 char* itoa(int i);
 int io_getkey();
 void io_clearscreen();
+int* data_getbuilt(int p);
 
 int wonder_hasstage(int wonder, int side, int stage)
 {
@@ -46,8 +48,25 @@ void print_wonder(int x, int y, int player, int cursor)
    text = cat(text, "  ");
   y = io_printtext(x, y, 29, text);
  }
+ io_printborder(x, y++);
+
+ //Print what has been built
+ int *built = data_getbuilt(player);
+ for(i = 0; built[i] != -1; i+=2) {
+  io_printname(x, y++, built[i], built[i+1]);
+ }
+ if(i == 0) y--;
+
+ //Info about component
  if(wonder_hasstage(data_getwonder(player), data_getwonderside(player), cursor))
   io_printcard(x, y, data_getwonder(player), cursor+1+3*data_getwonderside(player));
+}
+
+void print_wondersmall(int x, int y, int player)
+{
+ io_printborder(x, y++);
+ y = io_printtext(x, y, 29, cards_getname(data_getwonder(player), 0));
+ io_printborder(x, y);
 }
 
 void wonder_selected(int player)

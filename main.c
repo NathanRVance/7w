@@ -1,15 +1,17 @@
 #include "7w.h"
 #include <stdlib.h>
 
+void tester();
 void io_init();
 void cards_init();
 void io_printcard(int x, int y, int era, int card);
-void cardtour();
 void io_clearscreen();
 int* getdeck(int era, int numplayers);
 void data_init(int num_players);
 void player_turn(int player);
 void wonder_selected(int player);
+void view_refresh(int focus, int cursor, int player);
+int data_numplayers();
 
 void halt()
 {
@@ -21,34 +23,30 @@ main()
 {
  io_init();
  cards_init();
- data_init(4);
-// cardtour();
- wonder_selected(0);
- player_turn(1);
+ data_init(7);
+ tester();
+// wonder_selected(0);
+// player_turn(1);
  halt();
 }
 
-void cardtour()
+void tester()
 {
- int era, card;
- era = card = 0;
- int deckpos = 0;
- int numplayers = 4;
- int *decks[3];
- decks[0] = getdeck(0, numplayers);
- decks[1] = getdeck(1, numplayers);
- decks[2] = getdeck(2, numplayers);
+ int focus, cursor, player;
+ focus = cursor = player = 0;
+ int numplayers = data_numplayers();
  while(1) {
-  io_clearscreen();
-  io_printcard(0, 0, era, decks[era][card]);
+  view_refresh(focus, cursor, player);
   switch(io_getkey()) {
-   case DOWN: if(card < numplayers*7) card++;
+   case DOWN: cursor++;
     break;
-   case UP: if(card > 0) card--;
+   case UP: if(cursor > 0) cursor--;
     break;
-   case LEFT: if(era > 0) era--;
+   case LEFT: if(focus > 0) focus--;
     break;
-   case RIGHT: if(era < 2) era++;
+   case RIGHT: if(focus < numplayers) focus++;
+    break;
+   case ENTER: player = (player+1)%numplayers;
     break;
    case 'q': halt();
     break;
