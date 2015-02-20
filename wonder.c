@@ -4,6 +4,8 @@ int* cards_getcost(int wonder, int stage); //remember the stage offset!
 int* cards_getproduction(int wonder, int stage);
 char* cards_getname(int wonder, int stage); //stage should always be 0
 char* cards_specialmessage(int wonder, int stage);
+char* getname(int res);
+int cards_gettype(int wonder, int stage); //stage is 0
 int data_getwonder(int p);
 int data_getwonderside(int p);
 void io_printborder(int x, int y);
@@ -30,6 +32,7 @@ void print_wonder(int x, int y, int player, int cursor)
 {
  io_printborder(x, y++);
  y = io_printtext(x, y, 29, cards_getname(data_getwonder(player), 0));
+ y = io_printtext(x, y, 29, cat("Produces 1 ", getname(cards_gettype(data_getwonder(player), 0))));
  int i;
  for(i = 0; wonder_hasstage(data_getwonder(player), data_getwonderside(player), i); i++) {
   char *text = cat("Stage ", itoa(i+1));

@@ -3,6 +3,7 @@
 
 int* getdeck(int era, int numplayers);
 int* cards_getproduction(int era, int card);
+int cards_gettype(int era, int card);
 int* get_intarray(int size);
 void array_cpy(int *a, int *b, int len); //copies b to a
 void shuffle(int *deck, int n);
@@ -27,14 +28,14 @@ void data_nextera()
    hands[i][j] = decks[era][k++];
 }
 
-void data_distributewonders(int n)
+void data_distributewonders()
 {
  int i;
  int wonders[7];
  for(i = 0; i < 7; i++)
   wonders[i] = i+3; //wonders are numbered 3-9
  shuffle(wonders, 7);
- for(i = 0; i < n; i++) {
+ for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
  }
@@ -99,6 +100,11 @@ int data_getwonderside(int p)
 int data_getwonderstages(int p)
 {
  return player[p][3][2];
+}
+
+int data_numplayers()
+{
+ return numplayers;
 }
 
 void data_build(int p, int card)
@@ -202,4 +208,19 @@ int data_canafford(int p, int *cost)
  data_removedefinites(p, cost);
  if(data_iszerocost(cost)) return 2;
  return recurse(cost, data_getindefinites(p));
+}
+
+int* data_getbuilt(int p)
+{
+ int *ret = get_intarray(42);
+ int type, e, c;
+ int i = 0;
+ for(type = 0; type <= 7; type++)
+  for(e = 0; e < 3; e++)
+   for(c = 0; c < 7; c++)
+    if(cards_gettype(e, player[p][e][c]) == type) {
+     ret[i++] = e;
+     ret[i++] = player[p][e][c];
+    }
+ return ret;
 }
