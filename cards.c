@@ -225,11 +225,11 @@ void cards_init()
  cards_setname(0, 17, "Tavern", COMMERCIAL);
 
  cards_setcoupons(0, 18, 1, 11, 0, 0);
- cards_setmessage(0, 18, "Can trade 1 coin for resources with player to the LEFT.");
+ cards_setmessage(0, 18, "Can trade 1 coin for resources with player to the east.");
  cards_setname(0, 18, "East Trading Post", COMMERCIAL);
 
  cards_setcoupons(0, 19, 1, 11, 0, 0);
- cards_setmessage(0, 19, "Can trade 1 coin for resources with player to the RIGHT.");
+ cards_setmessage(0, 19, "Can trade 1 coin for resources with player to the west.");
  cards_setname(0, 19, "West Trading Post", COMMERCIAL);
 
  cards_setcoupons(0, 20, 1, 12, 0, 0);

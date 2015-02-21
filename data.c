@@ -5,7 +5,6 @@ int* getdeck(int era, int numplayers);
 int* cards_getproduction(int era, int card);
 int cards_gettype(int era, int card);
 int* get_intarray(int size);
-void array_cpy(int *a, int *b, int len); //copies b to a
 void shuffle(int *deck, int n);
 
 #define MISC 3
@@ -16,16 +15,33 @@ static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonde
 static int hands[7][7];
 static int numplayers;
 static int era;
+static int turn;
+
+void data_sorthands()
+{
+ int i, j, k, type, buffer[7];
+ for(i = 0; i < numplayers; i++) {
+  k = 0;
+  for(type = 0; type <= 7; type++) {
+   for(j = 0; j < 7; j++) {
+    if(cards_gettype(era, hands[i][j]) == type) buffer[k++] = hands[i][j];
+   }
+  }
+  for(k = 0; k < 7; k++) hands[i][k] = buffer[k];
+ }
+}
 
 void data_nextera()
 {
  if(era == 2) return;
  era++;
+ turn = 0;
  int i, j, k;
  k = 0;
  for(i = 0; i < numplayers; i++)
   for(j = 0; j < 7; j++)
    hands[i][j] = decks[era][k++];
+ data_sorthands();
 }
 
 void data_distributewonders()
@@ -61,25 +77,16 @@ void data_init(int n)
 
 void data_passturn()
 { //remember, player numbers are arranged clockwise
- int buffer[7], i;
- if(era == 0 || era == 2) { //pass to the left
-  array_cpy(buffer, hands[numplayers-1], 7);
-  for(i = numplayers-1; i > 0; i--) {
-   array_cpy(hands[i], hands[i-1], 7);
-  }
-  array_cpy(hands[0], buffer, 7);
- } else { //pass to the right
-  array_cpy(buffer, hands[0], 7);
-  for(i = 0; i < numplayers-1; i++) {
-   array_cpy(hands[i], hands[i+1], 7);
-  }
-  array_cpy(hands[numplayers-1], buffer, 7);
- }
+ if(era == 0 || era == 2) //pass to the left
+  turn++;
+ else  //pass to the right
+  turn--;
+ if(turn < 0) turn = numplayers-1;
 }
 
 int* data_gethand(int p)
 {
- return hands[p];
+ return hands[(p+turn)%numplayers];
 }
 
 int data_getera()

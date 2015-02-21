@@ -24,9 +24,9 @@ main()
  io_init();
  cards_init();
  data_init(7);
- tester();
+// tester();
 // wonder_selected(0);
-// player_turn(1);
+ player_turn(0);
  halt();
 }
 

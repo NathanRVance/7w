@@ -26,12 +26,6 @@ char* get_chararray(int size)
  return ret;
 }
 
-void array_cpy(int *a, int *b, int len) //copies b to a
-{
- int i;
- for(i = 0; i < len; i++) a[i] = b[i];
-}
-
 /* In string a[], replace nth occerence of x[] with y[],
    or all occerences if n == 0. Note '.' is wild and
    the last . replaced will be returned. */

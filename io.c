@@ -115,7 +115,7 @@ void io_printborder(int x, int y)
  mvprintw(y, x, "############################");
 }
 
-void io_printcard(int x, int y, int era, int card)
+int io_printcard(int x, int y, int era, int card)
 {
  io_printborder(x, y++);
  if(cards_getname(era, card)[0] != '\0')
@@ -172,18 +172,29 @@ void io_printcard(int x, int y, int era, int card)
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
 
- io_printborder(x, y++);
+ io_printborder(x, y);
+ return y;
 }
 
 void io_printhand(int x, int y, int player, int cursor)
 {
  int *hand = data_gethand(player);
  int i;
+ int cursed = 0;
  io_printborder(x, y++);
+ y = io_printtext(x, y, 29, "          Hand");
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   io_printname(x, y++, data_getera(), hand[i]);
-  if(i == cursor) mvprintw(y-1, x+25, "*");
-  refresh();
+  if(i == cursor) {
+   mvprintw(y-1, x+25, "*");
+   cursed = 1;
+  }
  }
- io_printborder(x, y++);
+ if(cursed) io_printcard(x, y, data_getera(), hand[cursor]);
+ else io_printborder(x, y);
+}
+
+void io_printplain(int x, int y, char *s)
+{
+ mvprintw(y, x, "%s", s);
 }
