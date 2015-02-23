@@ -8,6 +8,7 @@ static void replace(char a[], char b[], int x, int y);
 #define POOLSIZE 10000
 static int ipool[POOLSIZE];
 static int *ipoolp = ipool;
+
 int* get_intarray(int size)
 {
  if(ipoolp + size > ipool + POOLSIZE) ipoolp = ipool;
@@ -18,6 +19,7 @@ int* get_intarray(int size)
 
 static char cpool[POOLSIZE];
 static char *cpoolp = cpool;
+
 char* get_chararray(int size)
 {
  if(cpoolp + size > cpool + POOLSIZE) cpoolp = cpool;

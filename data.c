@@ -208,19 +208,25 @@ void data_removedefinites(int p, int *cost)
  }
 }
 
-#define INDEF 16
-
-int* data_getindefinites(int p)
+int** data_getindefinites(int p)
 {
- int *ret = get_intarray(INDEF);
- int i, j, k;
+ int i, j, k, l, m, *prod;
+ static int *ret[INDEF];
+ for(i = 0; i < INDEF; i++) {
+  ret[i] = get_intarray(4);
+  for(j = 0; j < 4; j++)
+   ret[i][j] = -1;
+ }
  k = 0;
- for(i = 0; i < INDEF; i++) ret[i] = 0;
  for(i = 0; i < 2; i++) {
   for(j = 0; j < 7; j++) {
    if(data_productiontype(i, player[p][i][j]) == 2) {
-    ret[k++] = i;
-    ret[k++] = player[p][i][j];
+    m = 0;
+    prod = cards_getproduction(i, player[p][i][j]);
+    for(l = 0; l < GOLD; l++) {
+     if(prod[l]) ret[k][m++] = l;
+    }
+    k++;
    }
   }
  }
@@ -236,24 +242,17 @@ int data_iszerocost(int *cost)
  return free;
 }
 
-static int recurse(int *cost, int *indef)
+static int recurse(int *cost, int **indef, int c)
 {
+ if(c == INDEF) return 0;
  int i;
- int ncost[GOLD], nindef[INDEF], *prod;
+ int ncost[GOLD];
  for(i = 0; i < GOLD; i++) ncost[i] = cost[i];
- for(i = 0; i < INDEF; i++) nindef[i] = indef[i];
- for(i = 0; i < INDEF && nindef[i] != 0; i += 2);
- if(i < INDEF) {
-  prod = cards_getproduction(nindef[i-1], nindef[i]);
-  nindef[i-1] = nindef[i] = 0;
-  for(i = 0; i < GOLD; i++) {
-   if(prod[i] && ncost[i]) {
-    ncost[i] -= prod[i];
-    if(data_iszerocost(ncost)) return 1;
-    if(recurse(ncost, nindef)) return 1;
-    ncost[i] += prod[i];
-   }
-  }
+ for(i = 0; i < 4 && indef[c][i] != -1; i++) {
+  ncost[indef[c][i]]--;
+  if(data_iszerocost(ncost)) return 1;
+  if(recurse(ncost, indef, c+1)) return 1;
+  ncost[indef[c][i]]++;
  }
  return 0;
 }
@@ -265,7 +264,7 @@ int data_canafford(int p, int *cost)
  int i, j, k;
  data_removedefinites(p, cost);
  if(data_iszerocost(cost)) return 2;
- return recurse(cost, data_getindefinites(p));
+ return recurse(cost, data_getindefinites(p), 0);
 }
 
 int* data_getbuilt(int p)

@@ -21,6 +21,7 @@ void io_clearscreen();
 int* data_getbuilt(int p);
 void io_printplain(int x, int y, char *s);
 int* data_getdefinites(int p);
+int** data_getindefinites(int p);
 
 int wonder_numstages(int player)
 {
@@ -34,7 +35,7 @@ int wonder_numstages(int player)
 
 int print_wonder(int x, int y, int player, int cursor)
 {
- int i;
+ int i, j;
  io_printborder(x, y++);
  y = io_printtext(x, y, 29, cards_getname(data_getwonder(player), 0));
  y = io_printtext(x, y, 29, cat("Produces: 1 ", getname(cards_gettype(data_getwonder(player), 0))));
@@ -43,18 +44,26 @@ int print_wonder(int x, int y, int player, int cursor)
 
  //Print resource incomes
  int *def = data_getdefinites(player);
- int has = 0;
- for(i = 0; i < GOLD; i++)
-  if(def[i]) has = 1;
- if(has) {
-  y = io_printtext(x, y, 29, "Production:");
-  for(i = 0; i < GOLD; i++) {
-   if(def[i]) {
-    y = io_printtext(x, y, 29, cat(cat(cat(" ", getname(i)), ": "), itoa(def[i])));
-   }
+ def[cards_gettype(data_getwonder(player), 0)]++;
+ int **indef = data_getindefinites(player);
+ y = io_printtext(x, y, 29, "Production:");
+ for(i = 0; i < GOLD; i++) {
+  if(def[i]) {
+   y = io_printtext(x, y, 29, cat(cat(cat(" ", getname(i)), ": "), itoa(def[i])));
   }
-  io_printborder(x, y++);
  }
+ for(i = 0; i < INDEF; i++) {
+  char *text = "";
+  for(j = 0; j < 4; j++) {
+   if(indef[i][j] != -1)
+    text = cat(cat(text, "/"), getname(indef[i][j]));
+  }
+  if(text[0] != '\0') {
+   y = io_printtext(x, y, 29, text);
+   io_printplain(x+2, y-1, " ");
+  }
+ }
+ io_printborder(x, y++);
 
  //Print wonder stages
  for(i = 0; i < wonder_numstages(player); i++) {
@@ -73,7 +82,6 @@ int print_wonder(int x, int y, int player, int cursor)
 
  //Print what has been built
  int *built = data_getbuilt(player);
- int j;
  int print = -1;
  for(j = 0; built[j] != -1; j+=2) {
   io_printname(x, y++, built[j], built[j+1]);

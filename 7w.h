@@ -52,3 +52,5 @@
 #define COLORMILITARY 31
 #define COLORSCIENTIFIC 32
 #define COLORGUILD 35
+
+#define INDEF 8
