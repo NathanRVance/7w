@@ -4,6 +4,8 @@
 int* getdeck(int era, int numplayers);
 int* cards_getproduction(int era, int card);
 int cards_gettype(int era, int card);
+int* cards_getcost(int era, int card);
+int* cards_getproduction(int era, int card);
 int* get_intarray(int size);
 void shuffle(int *deck, int n);
 
@@ -12,10 +14,12 @@ void shuffle(int *deck, int n);
 
 static int decks[3][49];
 static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats)
+static int buffer[7][2];
 static int hands[7][7];
 static int numplayers;
 static int era;
 static int turn;
+static int totturns;
 
 void data_sorthands()
 {
@@ -36,6 +40,7 @@ void data_nextera()
  if(era == 2) return;
  era++;
  turn = 0;
+ totturns = 0;
  int i, j, k;
  k = 0;
  for(i = 0; i < numplayers; i++)
@@ -69,19 +74,36 @@ void data_init(int n)
  era = -1;
  data_nextera();
  data_distributewonders(n);
- for(i = 0; i < n; i++)
+ for(i = 0; i < n; i++) {
   for(j = 0; j < 3; j++)
    for(k = 0; k < 7; k++)
     player[i][j][k] = -1;
+  player[i][3][3] = 2; //start with 2 gold
+  buffer[i][0] = -1;
+ }
 }
 
-void data_passturn()
+void data_endturn()
 { //remember, player numbers are arranged clockwise
  if(era == 0 || era == 2) //pass to the left
   turn++;
  else  //pass to the right
   turn--;
  if(turn < 0) turn = numplayers-1;
+ int i, j;
+ for(i = 0; i < numplayers; i++) {
+  if(buffer[i][0] == -2) {
+   player[i][3][2]++;
+  } else {
+   for(j = 0; player[i][era][j] != -1; j++); //get free spot in array
+   player[i][era][j] = buffer[i][0]; //build card
+  }
+  player[i][3][3] += buffer[i][1]; //change in gold
+  buffer[i][0] = -1;
+  buffer[i][1] = 0;
+ }
+ totturns++;
+ if(totturns == 6) data_nextera();
 }
 
 int* data_gethand(int p)
@@ -109,6 +131,11 @@ int data_getwonderstages(int p)
  return player[p][3][2];
 }
 
+int data_getgold(int p)
+{
+ return player[p][3][3];
+}
+
 int data_numplayers()
 {
  return numplayers;
@@ -117,11 +144,25 @@ int data_numplayers()
 void data_build(int p, int card)
 {
  int i;
- for(i = 0; hands[p][i] != card; i++);
- for(; i < 7; i++) hands[p][i] = hands[p][i+1];
- hands[p][7] = -1;
- for(i = 0; player[p][era][i] != -1; i++);
- player[p][era][i] = card;
+ int *hand = data_gethand(p);
+ for(i = 0; hand[i] != card; i++);
+ for(; i < 6; i++) hand[i] = hand[i+1];
+ hand[6] = -1;
+ buffer[p][0] = card; //will be added to player array at end of turn
+ buffer[p][1] -= cards_getcost(era, card)[GOLD];
+ buffer[p][1] += cards_getproduction(era, card)[GOLD];
+}
+
+void data_buildwonder(int p, int card)
+{
+ int i;
+ int *hand = data_gethand(p);
+ for(i = 0; hand[i] != card; i++);
+ for(; i < 6; i++) hand[i] = hand[i+1];
+ hand[6] = -1;
+ buffer[p][0] = -2;
+ buffer[p][1] -= cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD];
+ buffer[p][1] += cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD];
 }
 
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
@@ -139,21 +180,31 @@ int data_productiontype(int e, int card)
  return type;
 }
 
-void data_removedefinites(int p, int *cost)
+int* data_getdefinites(int p)
 {
+ int *ret = get_intarray(GOLD);
  int i, j, k, *prod;
  for(i = 0; i < 3; i++) {
   for(j = 0; j < 7; j++) {
-   if(data_productiontype(i, player[p][p][j]) == 1) {
+   if(data_productiontype(i, player[p][i][j]) == 1) {
     prod = cards_getproduction(i, player[p][i][j]);
     for(k = 0; k < GOLD; k++) {
-     if(prod[k] && cost[k]) {
-      cost[k] -= prod[k];
-      if(cost[k] < 0) cost[k] = 0;
-     }
+     ret[k] += prod[k];
     }
    }
   }
+ }
+ return ret;
+}
+
+void data_removedefinites(int p, int *cost)
+{
+ cost[cards_gettype(data_getwonder(p), 0)]--;
+ int *prod = data_getdefinites(p);
+ int i;
+ for(i = 0; i < GOLD; i++) {
+  cost[i] -= prod[i];
+  if(cost[i] < 0) cost[i] = 0;
  }
 }
 
@@ -231,4 +282,14 @@ int* data_getbuilt(int p)
     }
  ret[i] = -1; //Cap it here
  return ret;
+}
+
+int data_numbuilt(int p)
+{
+ int num = 0;
+ int i, j;
+ for(i = 0; i < 3; i++)
+  for(j = 0; j < 7; j++)
+   if(player[p][i][j] != -1) num++;
+ return num;
 }

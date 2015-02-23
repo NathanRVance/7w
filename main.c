@@ -23,7 +23,7 @@ main()
 {
  io_init();
  cards_init();
- data_init(7);
+ data_init(3);
 // tester();
 // wonder_selected(0);
  player_turn(0);
