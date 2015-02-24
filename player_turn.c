@@ -2,14 +2,13 @@
 
 int* data_gethand(int p);
 int data_getera();
-void io_printhand(int x, int y, int player, int cursor);
-void io_printcard(int x, int y, int era, int card);
 int io_getkey();
 void data_endturn();
-void data_nextera();
 int data_numplayers();
 void data_build(int p, int card);
+void data_discard(int p, int card);
 void data_buildwonder(int p, int card);
+void data_addgold(int amnt, int p);
 void view_refresh(int focus, int cursor, int player);
 int wonder_numstages(int player);
 int* cards_getcost(int era, int card);
@@ -17,21 +16,29 @@ int data_numbuilt(int p);
 void postmessage(char* message);
 void posthelp();
 void clearmessage();
+int postoptions(int x, int y);
 
 int player_build(int focus, int cursor, int player)
 {
+ int *hand = data_gethand(player);
  if(focus == data_numplayers()) {
-  int *hand = data_gethand(player);
-  if(data_canafford(player, cards_getcost(data_getera(), hand[cursor]))) {
-   data_build(player, hand[cursor]);
+  if(hand[cursor] == -1) return 0;
+  int choice = postoptions(65, 20);
+  if(choice == 0) {
+   if(data_canafford(player, cards_getcost(data_getera(), hand[cursor]))) {
+    data_build(player, hand[cursor]);
+    return 1;
+   }
+   else postmessage("Can't afford this!");
+  } else if(choice == 1) {
+   data_discard(player, hand[cursor]);
+   data_addgold(3, player);
    return 1;
-  }
-  else postmessage("Can't afford this!");
- }
- if(focus == 0) {
-  if(data_canafford(player, cards_getcost(data_getwonder(player), data_getwonderside(player)*3+1+cursor))) {
-   data_buildwonder(player, 0); //change to choose card used
-   return 1;
+  } else if(choice == 2) {
+   if(data_canafford(player, cards_getcost(data_getwonder(player), data_getwonderside(player)*3+1+cursor))) {
+    data_buildwonder(player, hand[cursor]);
+    return 1;
+   }
   }
  }
  return 0;

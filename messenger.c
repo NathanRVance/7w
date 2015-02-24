@@ -1,5 +1,6 @@
 #include "7w.h"
 
+int io_getkey();
 int io_printtext(int xorigin, int y, int width, char* text);
 void io_printborder(int x, int y, int width);
 
@@ -28,4 +29,35 @@ void clearmessage()
 void posthelp()
 {
  postmessage("    7 Wonders Help:\nKeys:\n Arrow keys move cursor\n Return - buys resource\n h - prints this message");
+}
+
+int postoptions(int x, int y)
+{
+ int width = 19;
+ int yorig = y;
+ int cursor = 0;
+ char* a = "Buy Sell Wonder";
+ char* b = " *";
+ char* c = "     *";
+ char* d = "           *";
+ while(1) {
+  y = yorig;
+  io_printborder(x, y++, width);
+  y = io_printtext(x, y, width, a);
+  if(cursor == 0) y = io_printtext(x, y, width, b);
+  if(cursor == 1) y = io_printtext(x, y, width, c);
+  if(cursor == 2) y = io_printtext(x, y, width, d);
+  io_printborder(x, y++, width);
+  switch(io_getkey()) {
+   case LEFT: cursor--;
+    break;
+   case RIGHT: cursor++;
+    break;
+   case ENTER: return cursor;
+    break;
+   default: break;
+  }
+  if(cursor < 0) cursor = 2;
+  cursor = cursor%3;
+ }
 }

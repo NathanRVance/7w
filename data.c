@@ -136,33 +136,39 @@ int data_getgold(int p)
  return player[p][3][3];
 }
 
+void data_addgold(int amnt, int p)
+{
+ buffer[p][1] += amnt;
+}
+
 int data_numplayers()
 {
  return numplayers;
 }
 
-void data_build(int p, int card)
+void data_discard(int p, int card)
 {
  int i;
  int *hand = data_gethand(p);
  for(i = 0; hand[i] != card; i++);
  for(; i < 6; i++) hand[i] = hand[i+1];
  hand[6] = -1;
+}
+
+void data_build(int p, int card)
+{
+ data_discard(p, card);
  buffer[p][0] = card; //will be added to player array at end of turn
- buffer[p][1] -= cards_getcost(era, card)[GOLD];
- buffer[p][1] += cards_getproduction(era, card)[GOLD];
+ data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
+ data_addgold(cards_getproduction(era, card)[GOLD], p);
 }
 
 void data_buildwonder(int p, int card)
 {
- int i;
- int *hand = data_gethand(p);
- for(i = 0; hand[i] != card; i++);
- for(; i < 6; i++) hand[i] = hand[i+1];
- hand[6] = -1;
+ data_discard(p, card);
  buffer[p][0] = -2;
- buffer[p][1] -= cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD];
- buffer[p][1] += cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD];
+ data_addgold(cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD] * -1, p);
+ data_addgold(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD], p);
 }
 
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
@@ -260,7 +266,7 @@ static int recurse(int *cost, int **indef, int c)
 
 int data_canafford(int p, int *cost)
 {
- if(cost[GOLD] > player[p][MISC][DATAGOLD]) return 0;
+ if(cost[GOLD] > data_getgold(p)) return 0;
  int i, j, k;
  data_removedefinites(p, cost);
  if(data_iszerocost(cost)) return 1;
