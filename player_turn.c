@@ -14,18 +14,22 @@ void view_refresh(int focus, int cursor, int player);
 int wonder_numstages(int player);
 int* cards_getcost(int era, int card);
 int data_numbuilt(int p);
+void postmessage(char* message);
+void posthelp();
+void clearmessage();
 
 int player_build(int focus, int cursor, int player)
 {
  if(focus == data_numplayers()) {
   int *hand = data_gethand(player);
-  if(data_canafford(player, cards_getcost(data_getera(), hand[cursor])) == 2) {
+  if(data_canafford(player, cards_getcost(data_getera(), hand[cursor]))) {
    data_build(player, hand[cursor]);
    return 1;
   }
+  else postmessage("Can't afford this!");
  }
  if(focus == 0) {
-  if(data_canafford(player, cards_getcost(data_getwonder(player), data_getwonderside(player)*3+1+cursor)) == 2) {
+  if(data_canafford(player, cards_getcost(data_getwonder(player), data_getwonderside(player)*3+1+cursor))) {
    data_buildwonder(player, 0); //change to choose card used
    return 1;
   }
@@ -52,10 +56,16 @@ void player_turn(int player)
    case LEFT: focus--;
     break;
    case ENTER:
-    if(player_build(focus, cursor, player))
-     player++;
+    if(player_build(focus, cursor, player)) {
+        player++;
+        cursor = 0;
+        focus = data_numplayers();
+        clearmessage();
+       }
     break;
    case '\t': focus = (focus+1)%(data_numplayers()+1);
+    break;
+   case 'h': posthelp();
     break;
    default: break;
   }

@@ -88,7 +88,7 @@ void io_printblankline(int x, int y, int width)
 
 int io_printtext(int xorigin, int y, int width, char* text)
 {
- width -= 2; //padding
+ width -= 1; //padding
  int x = xorigin+2;
  int wordlength;
  int wordstart = 0;
@@ -97,27 +97,30 @@ int io_printtext(int xorigin, int y, int width, char* text)
  io_printblankline(xorigin, y, width);
  while(text[wordstart] != '\0') {
   wordlength = 0;
-  while(text[wordstart+(wordlength++)] != ' ' && text[wordstart+wordlength] != '\0');
-  if(x-xorigin+wordlength > width) {
+  while(text[wordstart+(wordlength++)] != ' ' && text[wordstart+wordlength] != '\0' && text[wordstart+wordlength] != '\n');
+  if(x-xorigin+wordlength > width || text[wordstart] == '\n') {
    io_printblankline(xorigin, ++y, width);
    x = xorigin+2;
   }
   mvprintw(y, x, "");
-  for(i = wordstart; i < wordstart+wordlength; i++) addch(text[i]);
+  for(i = wordstart; i < wordstart+wordlength; i++)
+   if(text[i] != '\n') addch(text[i]);
   x += wordlength;
   wordstart += wordlength;
  }
  return y+1;
 }
 
-void io_printborder(int x, int y)
+void io_printborder(int x, int y, int width)
 {
- mvprintw(y, x, "############################");
+ int i;
+ for(i = 0; i < width; i++)
+  mvprintw(y, x+i, "#");
 }
 
 int io_printcard(int x, int y, int era, int card)
 {
- io_printborder(x, y++);
+ io_printborder(x, y++, 28);
  if(cards_getname(era, card)[0] != '\0')
   io_printname(x, y++, era, card);
  int *costs = cards_getcost(era, card);
@@ -150,7 +153,7 @@ int io_printcard(int x, int y, int era, int card)
 
  char* message = cards_specialmessage(era, card);
  if(message[0] != '\0')
-  y = io_printtext(x, y, 29, message);
+  y = io_printtext(x, y, 28, message);
  
  int* coupons = cards_getcoupons(era, card);
  if(coupons[1] || coupons[3])
@@ -172,7 +175,7 @@ int io_printcard(int x, int y, int era, int card)
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
 
- io_printborder(x, y);
+ io_printborder(x, y, 28);
  return y;
 }
 
@@ -181,8 +184,8 @@ void io_printhand(int x, int y, int player, int cursor)
  int *hand = data_gethand(player);
  int i;
  int cursed = 0;
- io_printborder(x, y++);
- y = io_printtext(x, y, 29, "          Hand");
+ io_printborder(x, y++, 28);
+ y = io_printtext(x, y, 28, "          Hand");
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   io_printname(x, y++, data_getera(), hand[i]);
   if(i == cursor) {
@@ -191,7 +194,7 @@ void io_printhand(int x, int y, int player, int cursor)
   }
  }
  if(cursed) io_printcard(x, y, data_getera(), hand[cursor]);
- else io_printborder(x, y);
+ else io_printborder(x, y, 28);
 }
 
 void io_printplain(int x, int y, char *s)

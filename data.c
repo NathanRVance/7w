@@ -184,6 +184,7 @@ int* data_getdefinites(int p)
 {
  int *ret = get_intarray(GOLD);
  int i, j, k, *prod;
+ for(i = 0; i < GOLD; i++) ret[i] = 0;
  for(i = 0; i < 3; i++) {
   for(j = 0; j < 7; j++) {
    if(data_productiontype(i, player[p][i][j]) == 1) {
@@ -257,13 +258,12 @@ static int recurse(int *cost, int **indef, int c)
  return 0;
 }
 
-//return 0 if can't afford, 1 if must buy stuff from neighbors, 2 if have all resources.
 int data_canafford(int p, int *cost)
 {
  if(cost[GOLD] > player[p][MISC][DATAGOLD]) return 0;
  int i, j, k;
  data_removedefinites(p, cost);
- if(data_iszerocost(cost)) return 2;
+ if(data_iszerocost(cost)) return 1;
  return recurse(cost, data_getindefinites(p), 0);
 }
 

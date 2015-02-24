@@ -8,7 +8,7 @@ char* getname(int res);
 int cards_gettype(int wonder, int stage); //stage is 0
 int data_getwonder(int p);
 int data_getwonderside(int p);
-void io_printborder(int x, int y);
+void io_printborder(int x, int y, int width);
 int io_printtext(int xorigin, int y, int width, char* text);
 int io_printcard(int x, int y, int wonder, int stage);
 void io_printname(int x, int y, int era, int card);
@@ -36,20 +36,20 @@ int wonder_numstages(int player)
 int print_wonder(int x, int y, int player, int cursor)
 {
  int i, j;
- io_printborder(x, y++);
- y = io_printtext(x, y, 29, cards_getname(data_getwonder(player), 0));
- y = io_printtext(x, y, 29, cat("Produces: 1 ", getname(cards_gettype(data_getwonder(player), 0))));
- y = io_printtext(x, y, 29, cat(cat("Treasury: ", itoa(data_getgold(player))), " gold"));
- io_printborder(x, y++);
+ io_printborder(x, y++, 28);
+ y = io_printtext(x, y, 28, cards_getname(data_getwonder(player), 0));
+ y = io_printtext(x, y, 28, cat("Produces: 1 ", getname(cards_gettype(data_getwonder(player), 0))));
+ y = io_printtext(x, y, 28, cat(cat("Treasury: ", itoa(data_getgold(player))), " gold"));
+ io_printborder(x, y++, 28);
 
  //Print resource incomes
  int *def = data_getdefinites(player);
  def[cards_gettype(data_getwonder(player), 0)]++;
  int **indef = data_getindefinites(player);
- y = io_printtext(x, y, 29, "Production:");
+ y = io_printtext(x, y, 28, "Production:");
  for(i = 0; i < GOLD; i++) {
   if(def[i]) {
-   y = io_printtext(x, y, 29, cat(cat(cat(" ", getname(i)), ": "), itoa(def[i])));
+   y = io_printtext(x, y, 28, cat(cat(cat(" ", getname(i)), ": "), itoa(def[i])));
   }
  }
  for(i = 0; i < INDEF; i++) {
@@ -59,11 +59,11 @@ int print_wonder(int x, int y, int player, int cursor)
     text = cat(cat(text, "/"), getname(indef[i][j]));
   }
   if(text[0] != '\0') {
-   y = io_printtext(x, y, 29, text);
+   y = io_printtext(x, y, 28, text);
    io_printplain(x+2, y-1, " ");
   }
  }
- io_printborder(x, y++);
+ io_printborder(x, y++, 28);
 
  //Print wonder stages
  for(i = 0; i < wonder_numstages(player); i++) {
@@ -76,9 +76,9 @@ int print_wonder(int x, int y, int player, int cursor)
    text = cat(text, "     *");
   else
    text = cat(text, "  ");
-  y = io_printtext(x, y, 29, text);
+  y = io_printtext(x, y, 28, text);
  }
- io_printborder(x, y++);
+ io_printborder(x, y++, 28);
 
  //Print what has been built
  int *built = data_getbuilt(player);
@@ -91,7 +91,7 @@ int print_wonder(int x, int y, int player, int cursor)
   }
  }
  if(j == 0) y--;
- io_printborder(x, y);
+ io_printborder(x, y, 28);
 
  //Info about component
  if(cursor >= 0 && cursor < wonder_numstages(player))
@@ -103,12 +103,12 @@ int print_wonder(int x, int y, int player, int cursor)
 //dir is 0 for none, 1 for east, 2 for west
 int print_wondersmall(int x, int y, int player, int selected, int dir)
 {
- io_printborder(x, y++);
+ io_printborder(x, y++, 28);
  if(selected) io_printplain(28, y, "*");
  if(dir == 1) io_printplain(29, y, "East");
  if(dir == 2) io_printplain(29, y, "West");
- y = io_printtext(x, y, 29, cards_getname(data_getwonder(player), 0));
- io_printborder(x, y);
+ y = io_printtext(x, y, 28, cards_getname(data_getwonder(player), 0));
+ io_printborder(x, y, 28);
  return y;
 }
 

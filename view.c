@@ -7,6 +7,7 @@ void io_printhand(int x, int y, int player, int cursor);
 void io_clearscreen();
 int data_numplayers();
 void io_printhand(int x, int y, int player, int cursor);
+void printmessage(int x, int y, int width);
 
 void view_printwonders(int focus, int cursor, int player)
 {
@@ -22,6 +23,7 @@ void view_printwonders(int focus, int cursor, int player)
    print_wonder(34, 0, p, cursor);
   y = print_wondersmall(x, y, p, focus == p, dir);
  }
+ printmessage(0, y+2, 35);
 }
 
 void view_refresh(int focus, int cursor, int player)
