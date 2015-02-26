@@ -179,7 +179,7 @@ int io_printcard(int x, int y, int era, int card)
  return y;
 }
 
-void io_printhand(int x, int y, int player, int cursor)
+int io_printhand(int x, int y, int player, int cursor)
 {
  int *hand = data_gethand(player);
  int i;
@@ -193,8 +193,14 @@ void io_printhand(int x, int y, int player, int cursor)
    cursed = 1;
   }
  }
- if(cursed) io_printcard(x, y, data_getera(), hand[cursor]);
- else io_printborder(x, y, 28);
+ y = io_printtext(x, y, 28, " Trade...");
+ if(i == cursor) {
+  mvprintw(y-1, x+25, "*");
+  //trade_print(x, y, player, -1, -1);
+ }
+ else if(cursed) io_printcard(x, y, data_getera(), hand[cursor]);
+ else io_printborder(x, y++, 28);
+ return y;
 }
 
 void io_printplain(int x, int y, char *s)

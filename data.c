@@ -8,6 +8,7 @@ int* cards_getcost(int era, int card);
 int* cards_getproduction(int era, int card);
 int* get_intarray(int size);
 void shuffle(int *deck, int n);
+int* trade_buffer();
 
 #define MISC 3
 #define DATAGOLD 0
@@ -20,6 +21,7 @@ static int numplayers;
 static int era;
 static int turn;
 static int totturns;
+static int turngoldbuffer[7];
 
 void data_sorthands()
 {
@@ -106,9 +108,28 @@ void data_endturn()
  if(totturns == 6) data_nextera();
 }
 
+int data_geteast(int p)
+{
+ int ret = p-1;
+ if(ret < 0) ret = numplayers-1;
+}
+
+int data_getwest(int p)
+{
+ return (p+1)%numplayers;
+}
+
 int* data_gethand(int p)
 {
  return hands[(p+turn)%numplayers];
+}
+
+int data_numcards(int p)
+{
+ int *hand = data_gethand(p);
+ int numcards;
+ for(numcards = 0; numcards < 7 && hand[numcards] > -1; numcards++);
+ return numcards;
 }
 
 int data_getera()
@@ -133,12 +154,13 @@ int data_getwonderstages(int p)
 
 int data_getgold(int p)
 {
- return player[p][3][3];
+ return player[p][3][3] + turngoldbuffer[p];
 }
 
 void data_addgold(int amnt, int p)
 {
  buffer[p][1] += amnt;
+ turngoldbuffer[p] += amnt;
 }
 
 int data_numplayers()
@@ -153,22 +175,23 @@ void data_discard(int p, int card)
  for(i = 0; hand[i] != card; i++);
  for(; i < 6; i++) hand[i] = hand[i+1];
  hand[6] = -1;
+ for(i = 0; i < 7; i++) turngoldbuffer[i] = 0; //end of turn
 }
 
 void data_build(int p, int card)
 {
- data_discard(p, card);
  buffer[p][0] = card; //will be added to player array at end of turn
  data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
  data_addgold(cards_getproduction(era, card)[GOLD], p);
+ data_discard(p, card);
 }
 
 void data_buildwonder(int p, int card)
 {
- data_discard(p, card);
  buffer[p][0] = -2;
  data_addgold(cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD] * -1, p);
  data_addgold(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD], p);
+ data_discard(p, card);
 }
 
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
@@ -189,8 +212,9 @@ int data_productiontype(int e, int card)
 int* data_getdefinites(int p)
 {
  int *ret = get_intarray(GOLD);
+ int *trade = trade_buffer();
  int i, j, k, *prod;
- for(i = 0; i < GOLD; i++) ret[i] = 0;
+ for(i = 0; i < GOLD; i++) ret[i] = trade[i];
  for(i = 0; i < 3; i++) {
   for(j = 0; j < 7; j++) {
    if(data_productiontype(i, player[p][i][j]) == 1) {
@@ -237,6 +261,23 @@ int** data_getindefinites(int p)
    }
   }
  }
+ return ret;
+}
+
+int* data_gettradables(int p)
+{
+ int *ret = get_intarray(GOLD+1);
+ int i, j, k, *prod;
+ for(i = 0; i < GOLD; i++) ret[i] = 0;
+ for(i = 0; i < 3; i++) {
+  for(j = 0; j < 7; j++) {
+   prod = cards_getproduction(i, player[p][i][j]);
+   for(k = 0; k < GOLD; k++) {
+    ret[k] += prod[k];
+   }
+  }
+ }
+ ret[GOLD] = data_getgold(p);
  return ret;
 }
 
@@ -287,6 +328,23 @@ int* data_getbuilt(int p)
     }
  ret[i] = -1; //Cap it here
  return ret;
+}
+
+int data_hasbuilt(int p, int era, int card)
+{
+ int *built = data_getbuilt(p);
+ int i;
+ for(i = 0; built[i] != -1; i += 2)
+  if(built[i] == era && built[i+1] == card) return 1;
+ return 0;
+}
+
+int data_haswonderstage(int p, int wonder, int stage)
+{
+ if(data_getwonder(p) != wonder) return 0;
+ if(data_getwonderside(p)*3+1 > stage) return 0;
+ if(data_getwonderstages(p)+data_getwonderside(p)*3+1 > stage) return 1;
+ return 0;
 }
 
 int data_numbuilt(int p)

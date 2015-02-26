@@ -9,7 +9,8 @@ void data_build(int p, int card);
 void data_discard(int p, int card);
 void data_buildwonder(int p, int card);
 void data_addgold(int amnt, int p);
-void view_refresh(int focus, int cursor, int player);
+int data_numcards(int p);
+int view_refresh(int focus, int cursor, int player);
 int wonder_numstages(int player);
 int* cards_getcost(int era, int card);
 int data_numbuilt(int p);
@@ -17,6 +18,8 @@ void postmessage(char* message);
 void posthelp();
 void clearmessage();
 int postoptions(int x, int y);
+int trade_routine(int x, int y, int player);
+void trade_commit(int player);
 
 int player_build(int focus, int cursor, int player)
 {
@@ -46,13 +49,12 @@ int player_build(int focus, int cursor, int player)
 
 void player_turn(int player)
 {
- int numcards, *hand;
+ int numcards, tradey;
  int cursor = 0; 
  int focus = data_numplayers();
  while(1) {
-  hand = data_gethand(player);
-  for(numcards = 0; numcards < 7 && hand[numcards] > -1; numcards++);
-  view_refresh(focus, cursor, player);
+  numcards = data_numcards(player)+1; //include trade option in hand
+  tradey = view_refresh(focus, cursor, player);
   switch(io_getkey()) {
    case UP: cursor--;
     break;
@@ -64,11 +66,12 @@ void player_turn(int player)
     break;
    case ENTER:
     if(player_build(focus, cursor, player)) {
-        player++;
-        cursor = 0;
-        focus = data_numplayers();
-        clearmessage();
-       }
+     trade_commit(player);
+     player++;
+     cursor = 0;
+     focus = data_numplayers();
+     clearmessage();
+    }
     break;
    case '\t': focus = (focus+1)%(data_numplayers()+1);
     break;
@@ -83,8 +86,11 @@ void player_turn(int player)
   if(focus < 0) focus = data_numplayers();
   focus = focus%(data_numplayers()+1);
   if(focus == data_numplayers()) {
-   if(cursor < 0) cursor = numcards-1;
-   if(cursor >= numcards) cursor = 0;
+   if(cursor < 0) cursor = numcards-2;
+   if(cursor >= numcards-1) {
+    if(trade_routine(61, tradey, player)) cursor = 0;
+    else cursor = numcards-2;
+   }
   }
   else {
    if(cursor < 0) cursor = wonder_numstages((player+focus)%data_numplayers())+data_numbuilt(player+focus%data_numplayers())-1;
