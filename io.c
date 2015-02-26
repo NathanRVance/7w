@@ -13,6 +13,7 @@ int* cards_getcouponed(int era, int card);
 char* cards_specialmessage(int era, int card);
 int data_getera();
 int* data_gethand(int p);
+int* get_special(int era, int card, int player);
 
 void io_init()
 {
@@ -118,7 +119,7 @@ void io_printborder(int x, int y, int width)
   mvprintw(y, x+i, "#");
 }
 
-int io_printcard(int x, int y, int era, int card)
+int io_printcard(int x, int y, int era, int card, int player)
 {
  io_printborder(x, y++, 28);
  if(cards_getname(era, card)[0] != '\0')
@@ -175,6 +176,14 @@ int io_printcard(int x, int y, int era, int card)
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
 
+ int* special = get_special(era, card, player);
+ if(special[0] || special[1])
+ { //print special (vp, gold)
+  mvprintw(y++, x, "# In your case, produces:  #");
+  mvprintw(y++, x, "# %2d victory points        #", special[0]);
+  mvprintw(y++, x, "# %2d gold                  #", special[1]);
+ }
+
  io_printborder(x, y, 28);
  return y;
 }
@@ -198,7 +207,7 @@ int io_printhand(int x, int y, int player, int cursor)
   mvprintw(y-1, x+25, "*");
   //trade_print(x, y, player, -1, -1);
  }
- else if(cursed) io_printcard(x, y, data_getera(), hand[cursor]);
+ else if(cursed) io_printcard(x, y, data_getera(), hand[cursor], player);
  else io_printborder(x, y++, 28);
  return y;
 }

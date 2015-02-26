@@ -14,7 +14,7 @@ int* trade_buffer();
 #define DATAGOLD 0
 
 static int decks[3][49];
-static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats)
+static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats, vps(partial))
 static int buffer[7][2];
 static int hands[7][7];
 static int numplayers;
@@ -152,6 +152,11 @@ int data_getwonderstages(int p)
  return player[p][3][2];
 }
 
+int data_getdefeats(int p)
+{
+ return player[p][3][5];
+}
+
 int data_getgold(int p)
 {
  return player[p][3][3] + turngoldbuffer[p];
@@ -161,6 +166,11 @@ void data_addgold(int amnt, int p)
 {
  buffer[p][1] += amnt;
  turngoldbuffer[p] += amnt;
+}
+
+void data_addvps(int amnt, int p)
+{
+ player[p][3][6] += amnt;
 }
 
 int data_numplayers()

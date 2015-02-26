@@ -330,7 +330,7 @@ void cards_init()
  cards_setname(1, 13, "Vineyard", COMMERCIAL);
 
  cards_setmessage(1, 14, "2 coins for each industry card of adjacent players or your own.");
- cards_setname(1, 14, "Bazar", COMMERCIAL);
+ cards_setname(1, 14, "Bazaar", COMMERCIAL);
 
  cards_setcost(1, 15, STONE, 3);
  cards_setproduction(1, 15, SHIELD, 2);
@@ -535,7 +535,7 @@ void cards_init()
  cards_setcost(2, 26, WOOD, 3);
  cards_setcost(2, 26, STONE, 1);
  cards_setcost(2, 26, CLOTH, 1);
- cards_setmessage(2, 26, "1 vp for each structure card.");
+ cards_setmessage(2, 26, "1 vp for each structure card owned by adjacent players.");
  cards_setname(2, 26, "Magistrates Guild", GUILD);
 
  cards_setcost(2, 27, STONE, 2);

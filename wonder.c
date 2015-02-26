@@ -10,7 +10,7 @@ int data_getwonder(int p);
 int data_getwonderside(int p);
 void io_printborder(int x, int y, int width);
 int io_printtext(int xorigin, int y, int width, char* text);
-int io_printcard(int x, int y, int wonder, int stage);
+int io_printcard(int x, int y, int wonder, int stage, int player);
 void io_printname(int x, int y, int era, int card);
 int data_getwonderstages(int p);
 int data_getgold(int p);
@@ -95,9 +95,9 @@ int print_wonder(int x, int y, int player, int cursor)
 
  //Info about component
  if(cursor >= 0 && cursor < wonder_numstages(player))
- return io_printcard(x, y, data_getwonder(player), cursor+1+3*data_getwonderside(player));
+ return io_printcard(x, y, data_getwonder(player), cursor+1+3*data_getwonderside(player), player);
  if(cursor >= wonder_numstages(player))
-  return io_printcard(x, y, built[print], built[print+1]);
+  return io_printcard(x, y, built[print], built[print+1], player);
 }
 
 //dir is 0 for none, 1 for east, 2 for west

@@ -4,7 +4,6 @@
 void tester();
 void io_init();
 void cards_init();
-void io_printcard(int x, int y, int era, int card);
 void io_clearscreen();
 int* getdeck(int era, int numplayers);
 void data_init(int num_players);
