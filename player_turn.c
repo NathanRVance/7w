@@ -26,7 +26,7 @@ int player_build(int focus, int cursor, int player)
  int *hand = data_gethand(player);
  if(focus == data_numplayers()) {
   if(hand[cursor] == -1) return 0;
-  int choice = postoptions(65, 20);
+  int choice = postoptions(62, 20);
   if(choice == 0) {
    if(data_canafford(player, cards_getcost(data_getera(), hand[cursor]))) {
     data_build(player, hand[cursor]);

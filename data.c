@@ -10,6 +10,7 @@ int* get_intarray(int size);
 void shuffle(int *deck, int n);
 int* trade_buffer();
 int* get_special(int era, int card, int player);
+void war();
 
 #define MISC 3
 #define DATAGOLD 0
@@ -26,20 +27,21 @@ static int turngoldbuffer[7];
 
 void data_sorthands()
 {
- int i, j, k, type, buffer[7];
+ int i, j, k, type, buff[7];
  for(i = 0; i < numplayers; i++) {
   k = 0;
   for(type = 0; type <= 7; type++) {
    for(j = 0; j < 7; j++) {
-    if(cards_gettype(era, hands[i][j]) == type) buffer[k++] = hands[i][j];
+    if(cards_gettype(era, hands[i][j]) == type) buff[k++] = hands[i][j];
    }
   }
-  for(k = 0; k < 7; k++) hands[i][k] = buffer[k];
+  for(k = 0; k < 7; k++) hands[i][k] = buff[k];
  }
 }
 
 void data_nextera()
 {
+ war();
  if(era == 2) return;
  era++;
  turn = 0;
@@ -105,6 +107,7 @@ void data_endturn()
   player[i][3][6] += buffer[i][2];
   buffer[i][0] = -1;
   buffer[i][1] = 0;
+  buffer[i][2] = 0;
  }
  totturns++;
  if(totturns == 6) data_nextera();
@@ -119,6 +122,12 @@ int data_geteast(int p)
 int data_getwest(int p)
 {
  return (p+1)%numplayers;
+}
+
+int data_getdir(int dir, int p)
+{
+ if(dir == 0) return data_geteast(p);
+ return data_getwest(p);
 }
 
 int* data_gethand(int p)
@@ -157,6 +166,20 @@ int data_getwonderstages(int p)
 int data_getdefeats(int p)
 {
  return player[p][3][5];
+}
+
+void data_adddefeat(int p)
+{
+ player[p][3][5]++;
+}
+
+void data_addvictory(int p)
+{
+ int amnt;
+ if(era == 0) amnt = 1;
+ if(era == 1) amnt = 3;
+ if(era == 2) amnt = 5;
+ player[p][3][4] += amnt;
 }
 
 int data_getgold(int p)
@@ -205,6 +228,7 @@ void data_buildwonder(int p, int card)
  buffer[p][0] = -2;
  data_addgold(cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD] * -1, p);
  data_addgold(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD], p);
+ data_addvps(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[VP], p);
  data_discard(p, card);
 }
 

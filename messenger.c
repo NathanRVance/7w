@@ -28,18 +28,19 @@ void clearmessage()
 
 void posthelp()
 {
- postmessage("    7 Wonders Help:\nKeys:\n Arrow keys move cursor\n Return - buys resource\n h - prints this message");
+ postmessage("    7 Wonders Help:\nKeys:\n Arrow keys move cursor\n Return - buys card\n h - prints this message");
 }
 
 int postoptions(int x, int y)
 {
- int width = 19;
+ int width = 26;
  int yorig = y;
  int cursor = 0;
- char* a = "Buy Sell Wonder";
+ char* a = "Buy Sell Wonder Cancel";
  char* b = " *";
  char* c = "     *";
  char* d = "           *";
+ char* e = "                  *";
  while(1) {
   y = yorig;
   io_printborder(x, y++, width);
@@ -47,6 +48,7 @@ int postoptions(int x, int y)
   if(cursor == 0) y = io_printtext(x, y, width, b);
   if(cursor == 1) y = io_printtext(x, y, width, c);
   if(cursor == 2) y = io_printtext(x, y, width, d);
+  if(cursor == 3) y = io_printtext(x, y, width, e);
   io_printborder(x, y++, width);
   switch(io_getkey()) {
    case LEFT: cursor--;
@@ -57,7 +59,7 @@ int postoptions(int x, int y)
     break;
    default: break;
   }
-  if(cursor < 0) cursor = 2;
-  cursor = cursor%3;
+  if(cursor < 0) cursor = 3;
+  cursor = cursor%4;
  }
 }

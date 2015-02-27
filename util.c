@@ -5,7 +5,7 @@
 
 static void replace(char a[], char b[], int x, int y);
 
-#define POOLSIZE 10000
+#define POOLSIZE 100000
 static int ipool[POOLSIZE];
 static int *ipoolp = ipool;
 
@@ -26,48 +26,6 @@ char* get_chararray(int size)
  char* ret = cpoolp;
  cpoolp += size;
  return ret;
-}
-
-/* In string a[], replace nth occerence of x[] with y[],
-   or all occerences if n == 0. Note '.' is wild and
-   the last . replaced will be returned. */
-char util_strreplace(char a[], char x[], char y[], int n) {
- int replaceAll = ! n;
- int i, j, lengthY;
- char dot = '\0';
- for(lengthY = 0; y[lengthY] != '\0'; lengthY++);
- for(i = 0; a[i] != '\0'; i++) {
-  for(j = 0;; j++) {
-   if(a[i+j] != x[j] && x[j] != '\0' && x[j] != '.') // '.' is wild
-    break;
-   if (x[j] == '.') dot = a[i+j];
-   if (x[j] == '\0') {    //it's a match
-    n--;
-    if(replaceAll) {      //replace it
-     replace(a, y, i, j);
-     i += lengthY - 1;
-    }
-    else if(n == 0) {     //replace it
-     replace(a, y, i, j);
-     return dot;
-    }
-    break;
-   }
-  if(a[i+j] == '\0') //end of string
-   return dot;   
-  }
- }
-}
-
-/* In string a[], replace characters x - y with b[] */
-static void replace(char a[], char b[], int x, int y)
-{
- int i, j;
- for(i = 0; a[i] != '\0'; i++);
- char save[i-y+1];
- for(i = x+y, j = 0; (save[j] = a[i]) != '\0'; i++, j++);
- for(i = x, j = 0; (a[i] = b[j]) != '\0'; i++, j++);
- for(i = i, j = 0; (a[i] = save[j]) != '\0'; i++, j++);
 }
 
 /* Concatinates a and b and returns a different
