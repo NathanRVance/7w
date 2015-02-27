@@ -9,13 +9,14 @@ int* cards_getproduction(int era, int card);
 int* get_intarray(int size);
 void shuffle(int *deck, int n);
 int* trade_buffer();
+int* get_special(int era, int card, int player);
 
 #define MISC 3
 #define DATAGOLD 0
 
 static int decks[3][49];
 static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats, vps(partial))
-static int buffer[7][2];
+static int buffer[7][3];
 static int hands[7][7];
 static int numplayers;
 static int era;
@@ -101,6 +102,7 @@ void data_endturn()
    player[i][era][j] = buffer[i][0]; //build card
   }
   player[i][3][3] += buffer[i][1]; //change in gold
+  player[i][3][6] += buffer[i][2];
   buffer[i][0] = -1;
   buffer[i][1] = 0;
  }
@@ -170,7 +172,7 @@ void data_addgold(int amnt, int p)
 
 void data_addvps(int amnt, int p)
 {
- player[p][3][6] += amnt;
+ buffer[p][2] += amnt;
 }
 
 int data_numplayers()
@@ -193,6 +195,8 @@ void data_build(int p, int card)
  buffer[p][0] = card; //will be added to player array at end of turn
  data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
  data_addgold(cards_getproduction(era, card)[GOLD], p);
+ data_addvps(get_special(era, card, p)[0], p);
+ data_addgold(get_special(era, card, p)[1], p);
  data_discard(p, card);
 }
 
