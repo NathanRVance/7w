@@ -111,9 +111,6 @@ void trade_print(int x, int y, int player, int cursorx, int cursory)
 int trade_change(int cursorx, int cursory, int player, int change)
 {
  int forced = 0;
- int p;
- if(cursorx == 1) p = data_getwest(player);
- else p = data_geteast(player);
  int *tradee = trade_gettradables(player, cursorx);
  if(tradebuffer[2][cursory]-1 < 0) {
   change = 1;
@@ -128,7 +125,7 @@ int trade_change(int cursorx, int cursory, int player, int change)
  tradebuffer[2][cursory] += change;
  trade_addgold(player, get_trade(player, cursory, cursorx)*change*-1, cursorx);
 
- if(tradebuffer[2][cursory] == 0 || tradee[cursory] == 0 || data_getgold(player) == 0) return change*-1;
+ if(tradebuffer[2][cursory] == 0 || data_getgold(player) == 0) return change*-1;
  return change;
 }
 
