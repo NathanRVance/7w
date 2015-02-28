@@ -1,4 +1,5 @@
 #include "7w.h"
+#include <stdio.h>
 
 int* cards_getcost(int wonder, int stage); //remember the stage offset!
 int* cards_getproduction(int wonder, int stage);
@@ -22,6 +23,8 @@ int* data_getbuilt(int p);
 void io_printplain(int x, int y, char *s);
 int* data_getdefinites(int p);
 int** data_getindefinites(int p);
+int data_gettotvps(int p);
+int military_might(int player);
 
 int wonder_numstages(int player)
 {
@@ -103,11 +106,14 @@ int print_wonder(int x, int y, int player, int cursor)
 //dir is 0 for none, 1 for east, 2 for west
 int print_wondersmall(int x, int y, int player, int selected, int dir)
 {
+ char s[28];
  io_printborder(x, y++, 28);
  if(selected) io_printplain(28, y, "*");
  if(dir == 1) io_printplain(29, y, "East");
  if(dir == 2) io_printplain(29, y, "West");
  y = io_printtext(x, y, 28, cards_getname(data_getwonder(player), 0));
+ sprintf(s, "army: %-2d  vp's: %-2d", military_might(player), data_gettotvps(player));
+ y = io_printtext(x, y, 28, s);
  io_printborder(x, y, 28);
  return y;
 }

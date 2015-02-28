@@ -14,8 +14,10 @@ int io_getkey();
 void io_printborder(int x, int y, int width);
 int io_printtext(int xorigin, int y, int width, char* text);
 void io_printplain(int x, int y, char *s);
+void io_printcolor(int x, int y, int color, char *s);
 char* getname(int res);
 int view_refresh(int focus, int cursor, int player);
+char* itoa(int i);
 
 static int tradebuffer[3][GOLD+1];
 
@@ -96,6 +98,10 @@ void trade_print(int x, int y, int player, int cursorx, int cursory)
  for(i = 0; i < GOLD+1; i++) {
   sprintf(s, "%-7s %d %c| %-7s %d %c", getname(i), west[i], (cursorx == 1 && cursory == i)? '*' : ' ', getname(i), east[i], (cursorx == 0 && cursory == i)? '*' : ' ');
   y = io_printtext(x, y, width, s);
+  if(tradebuffer[1][i])
+   io_printcolor(x+10, y-1, 31, itoa(west[i]));
+  if(tradebuffer[0][i])
+   io_printcolor(x+23, y-1, 31, itoa(east[i]));
  }
  sprintf(s, "Your gold: %d", data_getgold(player));
  y = io_printtext(x, y, width, s);

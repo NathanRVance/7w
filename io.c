@@ -104,8 +104,9 @@ int io_printtext(int xorigin, int y, int width, char* text)
    x = xorigin+2;
   }
   mvprintw(y, x, "");
-  for(i = wordstart; i < wordstart+wordlength; i++)
+  for(i = wordstart; i < wordstart+wordlength; i++) {
    if(text[i] != '\n') addch(text[i]);
+  }
   x += wordlength;
   wordstart += wordlength;
  }
@@ -215,4 +216,11 @@ int io_printhand(int x, int y, int player, int cursor)
 void io_printplain(int x, int y, char *s)
 {
  mvprintw(y, x, "%s", s);
+}
+
+void io_printcolor(int x, int y, int color, char *s)
+{
+ attron(COLOR_PAIR(color));
+ io_printplain(x, y, s);
+ attrset(A_NORMAL);
 }

@@ -54,3 +54,6 @@
 #define COLORGUILD 35
 
 #define INDEF 8
+
+#define RED 31
+#define ESC '\1'

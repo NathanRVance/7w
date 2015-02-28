@@ -11,6 +11,7 @@ void shuffle(int *deck, int n);
 int* trade_buffer();
 int* get_special(int era, int card, int player);
 void war();
+int science(int player);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -218,7 +219,7 @@ void data_build(int p, int card)
  buffer[p][0] = card; //will be added to player array at end of turn
  data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
  data_addgold(cards_getproduction(era, card)[GOLD], p);
- data_addvps(get_special(era, card, p)[0], p);
+ data_addvps(cards_getproduction(era, card)[VP], p);
  data_addgold(get_special(era, card, p)[1], p);
  data_discard(p, card);
 }
@@ -393,4 +394,20 @@ int data_numbuilt(int p)
   for(j = 0; j < 7; j++)
    if(player[p][i][j] != -1) num++;
  return num;
+}
+
+int data_gettotvps(int p)
+{
+ int tot = 0;
+ tot += player[p][3][3] / 3; //gold
+ tot += player[p][3][4]; //military wins
+ tot -= player[p][3][5]; //military defeats
+ tot += player[p][3][6]; //vps
+ int *built = data_getbuilt(p);
+ int i;
+ for(i = 0; built[i] != -1; i += 2) {
+  tot += get_special(built[i], built[i+1], p)[0];
+ }
+ tot += science(p);
+ return tot;
 }
