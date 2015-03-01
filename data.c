@@ -128,7 +128,8 @@ int data_getwest(int p)
 int data_getdir(int dir, int p)
 {
  if(dir == 0) return data_geteast(p);
- return data_getwest(p);
+ if(dir == 1) return data_getwest(p);
+ return p;
 }
 
 int* data_gethand(int p)
@@ -410,4 +411,16 @@ int data_gettotvps(int p)
  }
  tot += science(p);
  return tot;
+}
+
+int data_potentialvps(int p, int era, int card)
+{
+ int i;
+ for(i = 0; player[p][era][i] != -1; i++); //get free spot in array
+ player[p][era][i] = card; //build card
+ player[i][3][3] += cards_getproduction(era, card)[GOLD];
+ int vps = data_gettotvps(p);
+ player[p][era][i] = -1;
+ player[i][3][3] -= cards_getproduction(era, card)[GOLD];
+ return vps;
 }

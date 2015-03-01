@@ -4,13 +4,13 @@ int* data_getbuilt(int p);
 int* cards_getproduction(int era, int card);
 int cards_gettype(int era, int card);
 int data_hasbuilt(int p, int era, int card);
+int* get_intarray(int size);
 
-int calc_science(int player, int guildval)
+int* get_science(int player)
 {
- int science[3];
+ int *science = get_intarray(3);
  int i, j;
  for(i = 0; i < 3; i++) science[i] = 0;
- if(guildval != -1) science[guildval]++;
  int *built = data_getbuilt(player);
  int *prod;
  for(i = 0; built[i] != -1; i += 2) {
@@ -21,6 +21,14 @@ int calc_science(int player, int guildval)
    }
   }
  }
+ return science;
+}
+
+int calc_science(int player, int guildval)
+{
+ int i;
+ int *science = get_science(player);
+ if(guildval != -1) science[guildval]++;
  int min = science[0];
  for(i = 0; i < 3; i++)
   if(science[i] < min) min = science[i];
