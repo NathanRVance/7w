@@ -67,10 +67,8 @@ void player_turn(int player)
    case ENTER:
     if(player_build(focus, cursor, player)) {
      trade_commit(player);
-     player++;
-     cursor = 0;
-     focus = data_numplayers();
      clearmessage();
+     return;
     }
     break;
    case '\t': focus = (focus+1)%(data_numplayers()+1);
@@ -78,10 +76,6 @@ void player_turn(int player)
    case 'h': posthelp();
     break;
    default: break;
-  }
-  if(player >= data_numplayers()) {
-   data_endturn();
-   player = 0;
   }
   if(focus < 0) focus = data_numplayers();
   focus = focus%(data_numplayers()+1);

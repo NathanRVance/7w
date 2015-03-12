@@ -132,9 +132,19 @@ int data_getdir(int dir, int p)
  return p;
 }
 
+int data_getnext(int p)
+{
+ if(era == 0 || era == 2) return data_getwest(p);
+ return data_geteast(p);
+}
+
 int* data_gethand(int p)
 {
- return hands[(p+turn)%numplayers];
+ int *ret = get_intarray(7);
+ int i;
+ for(i = 0; i < 7; i++)
+  ret[i] =  hands[(p+turn)%numplayers][i];
+ return ret;
 }
 
 int data_numcards(int p)
@@ -208,7 +218,7 @@ int data_numplayers()
 void data_discard(int p, int card)
 {
  int i;
- int *hand = data_gethand(p);
+ int *hand = hands[(p+turn)%numplayers];
  for(i = 0; hand[i] != card; i++);
  for(; i < 6; i++) hand[i] = hand[i+1];
  hand[6] = -1;

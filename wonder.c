@@ -112,7 +112,7 @@ int print_wondersmall(int x, int y, int player, int selected, int dir)
  if(dir == 1) io_printplain(29, y, "East");
  if(dir == 2) io_printplain(29, y, "West");
  y = io_printtext(x, y, 28, cards_getname(data_getwonder(player), 0));
- sprintf(s, "army: %-2d  vp's: %-2d", military_might(player), data_gettotvps(player));
+ sprintf(s, "army: %-2d vps: %-2d gold: %-2d", military_might(player), data_gettotvps(player), data_getgold(player));
  y = io_printtext(x, y, 28, s);
  io_printborder(x, y, 28);
  return y;

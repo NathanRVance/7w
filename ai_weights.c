@@ -109,15 +109,16 @@ int weight_buildcard(int era, int card, int player)
 {
  int weight = data_potentialvps(player, era, card);
  weight -= data_gettotvps(player);
+ if(cards_gettype(era, card) == MILITARY)
+  weight += weight_military(era, card, player);
  if(era == 2) return weight;
  if(cards_gettype(era, card) == SCIENTIFIC)
   weight += weight_science(era, card, player);
- if(cards_gettype(era, card) == MILITARY)
-  weight += weight_military(era, card, player);
  if(cards_gettype(era, card) == RESOURCE || cards_gettype(era, card) == INDUSTRY)
   weight += weight_resource(era, card, player);
  if(cards_gettype(era, card) == COMMERCIAL)
   weight += weight_commercial(era, card, player);
+ return weight;
 }
 
 int weight_buildwonder(int player)

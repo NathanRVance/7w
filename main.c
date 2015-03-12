@@ -8,9 +8,11 @@ void io_clearscreen();
 int* getdeck(int era, int numplayers);
 void data_init(int num_players);
 void player_turn(int player);
+void ai_turn(int player);
 void wonder_selected(int player);
 void view_refresh(int focus, int cursor, int player);
 int data_numplayers();
+void data_endturn();
 
 void halt()
 {
@@ -18,38 +20,26 @@ void halt()
  exit(0);
 }
 
+static int ais[7] = {0, 0, 1, 0, 0, 0, 0};
+
+main_routine()
+{
+ int player = 0;
+ while(1) {
+  if(ais[player]) ai_turn(player);
+  else player_turn(player);
+  if(++player == data_numplayers()) {
+   data_endturn();
+   player = 0;
+  }
+ }
+}
+
 main()
 {
  io_init();
  cards_init();
  data_init(3);
-// tester();
-// wonder_selected(0);
- player_turn(0);
+ main_routine();
  halt();
-}
-
-void tester()
-{
- int focus, cursor, player;
- focus = cursor = player = 0;
- int numplayers = data_numplayers();
- while(1) {
-  view_refresh(focus, cursor, player);
-  switch(io_getkey()) {
-   case DOWN: cursor++;
-    break;
-   case UP: if(cursor > 0) cursor--;
-    break;
-   case LEFT: if(focus > 0) focus--;
-    break;
-   case RIGHT: if(focus < numplayers) focus++;
-    break;
-   case ENTER: player = (player+1)%numplayers;
-    break;
-   case 'q': halt();
-    break;
-   default: break;
-  }
- }
 }
