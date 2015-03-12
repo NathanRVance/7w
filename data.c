@@ -1,17 +1,20 @@
 #include "7w.h"
 #include <time.h>
+#include <stdio.h>
 
 int* getdeck(int era, int numplayers);
 int* cards_getproduction(int era, int card);
 int cards_gettype(int era, int card);
 int* cards_getcost(int era, int card);
 int* cards_getproduction(int era, int card);
+int* cards_getcouponed(int era, int card);
 int* get_intarray(int size);
 void shuffle(int *deck, int n);
 int* trade_buffer();
 int* get_special(int era, int card, int player);
 void war();
 int science(int player);
+void halt();
 
 #define MISC 3
 #define DATAGOLD 0
@@ -40,10 +43,12 @@ void data_sorthands()
  }
 }
 
+void data_endgame();
+
 void data_nextera()
 {
  war();
- if(era == 2) return;
+ if(era == 2) data_endgame();
  era++;
  turn = 0;
  totturns = 0;
@@ -175,6 +180,21 @@ int data_getwonderstages(int p)
  return player[p][3][2];
 }
 
+int data_getnextwonderstage(int p)
+{
+ int side = data_getwonderside(p);
+ int stage = data_getwonderstages(p);
+ int wonder = data_getwonder(p);
+ if(side == 0) {
+  if(stage >= 2) return -1;
+ } else {
+  if(wonder == 3 && stage >= 1) return -1;
+  if(wonder != 9 && stage >= 2) return -1;
+  if(wonder == 9 && stage >= 3) return -1;
+ }
+ return side*3+1+stage;
+}
+
 int data_getdefeats(int p)
 {
  return player[p][3][5];
@@ -247,6 +267,7 @@ void data_buildwonder(int p, int card)
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
 int data_productiontype(int e, int card)
 {
+ if(e < 0 || card < 0) return 0;
  int *prod = cards_getproduction(e, card);
  int i;
  int type = 0;
@@ -292,9 +313,11 @@ void data_removedefinites(int p, int *cost)
 int** data_getindefinites(int p)
 {
  int i, j, k, l, m, *prod;
+ static int dats[4*INDEF];
  static int *ret[INDEF];
  for(i = 0; i < INDEF; i++) {
-  ret[i] = get_intarray(4);
+  //ret[i] = get_intarray(4);
+  ret[i] = &dats[4*i];
   for(j = 0; j < 4; j++)
    ret[i][j] = -1;
  }
@@ -318,12 +341,14 @@ int* data_gettradables(int p)
 {
  int *ret = get_intarray(GOLD+1);
  int i, j, k, *prod;
- for(i = 0; i < GOLD; i++) ret[i] = 0;
+ for(i = 0; i < GOLD+1; i++) ret[i] = 0;
  for(i = 0; i < 3; i++) {
   for(j = 0; j < 7; j++) {
-   prod = cards_getproduction(i, player[p][i][j]);
-   for(k = 0; k < GOLD; k++) {
-    ret[k] += prod[k];
+   if(player[p][i][j] != -1) {
+    prod = cards_getproduction(i, player[p][i][j]);
+    for(k = 0; k < GOLD; k++) {
+     ret[k] += prod[k];
+    }
    }
   }
  }
@@ -355,15 +380,6 @@ static int recurse(int *cost, int **indef, int c)
  return 0;
 }
 
-int data_canafford(int p, int *cost)
-{
- if(cost[GOLD] > data_getgold(p)) return 0;
- int i, j, k;
- data_removedefinites(p, cost);
- if(data_iszerocost(cost)) return 1;
- return recurse(cost, data_getindefinites(p), 0);
-}
-
 int* data_getbuilt(int p)
 {
  int *ret = get_intarray(43);
@@ -387,6 +403,27 @@ int data_hasbuilt(int p, int era, int card)
  for(i = 0; built[i] != -1; i += 2)
   if(built[i] == era && built[i+1] == card) return 1;
  return 0;
+}
+
+int data_iscouponed(int p, int era, int card)
+{
+ int* coupons = cards_getcouponed(era, card);
+ int i;
+ for(i = 0; i < 3; i += 2) {
+  if(coupons[1+1])
+   if(data_hasbuilt(p, coupons[i], coupons[i+1])) return 1;
+ }
+}
+
+int data_canafford(int p, int era, int card)
+{
+ if(data_iscouponed(p, era, card)) return 1;
+ int *cost = cards_getcost(era, card);
+ if(cost[GOLD] > data_getgold(p)) return 0;
+ int i, j, k;
+ data_removedefinites(p, cost);
+ if(data_iszerocost(cost)) return 1;
+ return recurse(cost, data_getindefinites(p), 0);
 }
 
 int data_haswonderstage(int p, int wonder, int stage)
@@ -433,4 +470,34 @@ int data_potentialvps(int p, int era, int card)
  player[p][era][i] = -1;
  player[i][3][3] -= cards_getproduction(era, card)[GOLD];
  return vps;
+}
+
+char* cards_getname(int wonder, int stage);
+void io_printborder(int x, int y, int width);
+int io_printtext(int xorigin, int y, int width, char* text);
+int io_getkey();
+
+void data_endgame()
+{
+ int x = 20;
+ int y = 5;
+ int width = 100;
+ char s[width];
+ io_printborder(x, y++, width);
+ int tots[numplayers];
+ int i, max;
+ for(i = 0; i < numplayers; i++) tots[i] = data_gettotvps(i);
+ max = 0;
+ while(1) {
+  for(i = 0; i < numplayers; i++) {
+   if(tots[i] > tots[max]) max = i;
+  }
+  if(tots[max] == -1) break;
+  sprintf(s, "vps: %-2d  %s", tots[max], cards_getname(data_getwonder(max), 0));
+  y = io_printtext(x, y, width, s);
+  tots[max] = -1;
+ }
+ io_printborder(x, y++, width);
+ io_getkey();
+ halt();
 }

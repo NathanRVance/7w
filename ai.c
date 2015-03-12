@@ -1,6 +1,6 @@
 #include "7w.h"
 
-int data_canafford(int p, int *cost);
+int data_canafford(int p, int era, int card);
 int* data_gethand(int p);
 int data_numcards(int p);
 int data_getera();
@@ -23,7 +23,7 @@ int* ai_bestcard(int *hand, int player) //return card
  int card = 0;
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   temp = weight_buildcard(data_getera(), hand[i], player);
-  if(! data_canafford(player, cards_getcost(data_getera(), hand[i])))
+  if(! data_canafford(player, data_getera(), hand[i]))
    temp = 0;
   if(temp > max) {
    max = temp;

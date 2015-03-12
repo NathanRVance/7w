@@ -10,6 +10,9 @@ void data_discard(int p, int card);
 void data_buildwonder(int p, int card);
 void data_addgold(int amnt, int p);
 int data_numcards(int p);
+int data_canafford(int p, int era, int card);
+int data_getwonder(int p);
+int data_getnextwonderstage(int p);
 int view_refresh(int focus, int cursor, int player);
 int wonder_numstages(int player);
 int* cards_getcost(int era, int card);
@@ -28,7 +31,7 @@ int player_build(int focus, int cursor, int player)
   if(hand[cursor] == -1) return 0;
   int choice = postoptions(62, 20);
   if(choice == 0) {
-   if(data_canafford(player, cards_getcost(data_getera(), hand[cursor]))) {
+   if(data_canafford(player, data_getera(), hand[cursor])) {
     data_build(player, hand[cursor]);
     return 1;
    }
@@ -38,10 +41,11 @@ int player_build(int focus, int cursor, int player)
    data_addgold(3, player);
    return 1;
   } else if(choice == 2) {
-   if(data_canafford(player, cards_getcost(data_getwonder(player), data_getwonderside(player)*3+1+cursor))) {
+   if(data_canafford(player, data_getwonder(player), data_getnextwonderstage(player))) {
     data_buildwonder(player, hand[cursor]);
     return 1;
    }
+   else postmessage("Can't afford this!");
   }
  }
  return 0;

@@ -3,12 +3,14 @@
 int data_getdir(int dir, int p); //0 is east, 1 is west, 2 returns player
 int* cards_getproduction(int era, int card);
 int* cards_getcost(int era, int card);
-int data_canafford(int p, int *cost);
+int data_canafford(int p, int era, int card);
 int* data_getdefinites(int p);
 int** data_getindefinites(int p);
 int* data_gettradables(int p);
 int data_productiontype(int e, int card);
 int data_getwonderstages(int p);
+int data_getwonder(int p);
+int data_getnextwonderstage(int p);
 int* get_special(int era, int card, int player);
 int get_trade(int player, int type, int direction);
 int cards_gettype(int era, int card);
@@ -123,5 +125,6 @@ int weight_buildcard(int era, int card, int player)
 
 int weight_buildwonder(int player)
 {
+ if(! data_canafford(player, data_getwonder(player), data_getnextwonderstage(player))) return 0;
  return (data_getwonderstages(player)+2) * 2;
 }

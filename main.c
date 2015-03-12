@@ -13,6 +13,7 @@ void wonder_selected(int player);
 void view_refresh(int focus, int cursor, int player);
 int data_numplayers();
 void data_endturn();
+int data_getera();
 
 void halt()
 {
@@ -20,7 +21,7 @@ void halt()
  exit(0);
 }
 
-static int ais[7] = {0, 0, 1, 0, 0, 0, 0};
+static int ais[7] = {0, 1, 1, 1, 1, 1, 1};
 
 main_routine()
 {
@@ -39,7 +40,7 @@ main()
 {
  io_init();
  cards_init();
- data_init(3);
+ data_init(5);
  main_routine();
  halt();
 }
