@@ -15,6 +15,7 @@ int weight_buildcard(int era, int card, int player);
 int weight_buildwonder(int player);
 int* cards_getproduction(int era, int card);
 int* cards_getcost(int era, int card);
+int data_hasbuiltname(int p, int era, int card);
 
 int* ai_bestcard(int *hand, int player) //return card
 {
@@ -23,7 +24,7 @@ int* ai_bestcard(int *hand, int player) //return card
  int card = 0;
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   temp = weight_buildcard(data_getera(), hand[i], player);
-  if(! data_canafford(player, data_getera(), hand[i]))
+  if(! data_canafford(player, data_getera(), hand[i]) || data_hasbuiltname(player, data_getera(), hand[i]))
    temp = 0;
   if(temp > max) {
    max = temp;

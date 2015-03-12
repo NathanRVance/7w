@@ -13,6 +13,7 @@ int data_numcards(int p);
 int data_canafford(int p, int era, int card);
 int data_getwonder(int p);
 int data_getnextwonderstage(int p);
+int data_hasbuiltname(int p, int era, int card);
 int view_refresh(int focus, int cursor, int player);
 int wonder_numstages(int player);
 int* cards_getcost(int era, int card);
@@ -31,6 +32,10 @@ int player_build(int focus, int cursor, int player)
   if(hand[cursor] == -1) return 0;
   int choice = postoptions(62, 20);
   if(choice == 0) {
+   if(data_hasbuiltname(player, data_getera(), hand[cursor])) {
+    postmessage("Cannot have two of the same card!");
+    return 0;
+   }
    if(data_canafford(player, data_getera(), hand[cursor])) {
     data_build(player, hand[cursor]);
     return 1;

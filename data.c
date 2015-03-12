@@ -15,6 +15,10 @@ int* get_special(int era, int card, int player);
 void war();
 int science(int player);
 void halt();
+char* cards_getname(int wonder, int stage);
+void io_printborder(int x, int y, int width);
+int io_printtext(int xorigin, int y, int width, char* text);
+int io_getkey();
 
 #define MISC 3
 #define DATAGOLD 0
@@ -405,6 +409,17 @@ int data_hasbuilt(int p, int era, int card)
  return 0;
 }
 
+int data_hasbuiltname(int p, int era, int card)
+{
+ if(data_hasbuilt(p, era, card)) return 1;
+ if(era == 1) {
+  if(card == 4 && data_hasbuilt(p, 0, 10)) return 1;
+  if(card == 5 && data_hasbuilt(p, 0, 11)) return 1;
+  if(card == 6 && data_hasbuilt(p, 0, 12)) return 1;
+ }
+ return 0;
+}
+
 int data_iscouponed(int p, int era, int card)
 {
  int* coupons = cards_getcouponed(era, card);
@@ -475,11 +490,6 @@ int data_potentialvps(int p, int era, int card)
  player[p][era][i] = -1;
  return vps;
 }
-
-char* cards_getname(int wonder, int stage);
-void io_printborder(int x, int y, int width);
-int io_printtext(int xorigin, int y, int width, char* text);
-int io_getkey();
 
 void data_endgame()
 {
