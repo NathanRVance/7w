@@ -17,6 +17,7 @@ int cards_gettype(int era, int card);
 int* get_science(int player);
 int* get_special(int era, int card, int player);
 int data_potentialvps(int p, int era, int card);
+int data_gettotvps(int p);
 int military_might(int player);
 
 int weight_science(int era, int card, int player)
@@ -112,9 +113,7 @@ int weight_buildcard(int era, int card, int player)
 {
  int weight = data_potentialvps(player, era, card);
  weight -= data_gettotvps(player);
- if(cards_gettype(era, card) == STRUCTURE)
-  weight *= 3;
-  weight /= 2;
+ if(cards_gettype(era, card) == STRUCTURE); //already done
  if(cards_gettype(era, card) == MILITARY)
   weight += weight_military(era, card, player);
  if(era == 2) return weight;

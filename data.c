@@ -465,10 +465,14 @@ int data_potentialvps(int p, int era, int card)
  int i;
  for(i = 0; player[p][era][i] != -1; i++); //get free spot in array
  player[p][era][i] = card; //build card
- player[i][3][3] += cards_getproduction(era, card)[GOLD];
+ player[p][3][3] += cards_getproduction(era, card)[GOLD];
+ player[p][3][3] += get_special(era, card, p)[1];
+ player[p][3][6] += cards_getproduction(era, card)[VP], p;
  int vps = data_gettotvps(p);
+ player[p][3][6] -= cards_getproduction(era, card)[VP], p;
+ player[p][3][3] -= get_special(era, card, p)[1];
+ player[p][3][3] -= cards_getproduction(era, card)[GOLD];
  player[p][era][i] = -1;
- player[i][3][3] -= cards_getproduction(era, card)[GOLD];
  return vps;
 }
 
