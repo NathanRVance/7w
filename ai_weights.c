@@ -103,6 +103,7 @@ int weight_commercial(int era, int card, int player)
  if(era == 1) {
   if(card == 11 || card == 12) return weight_resource(era, card, player);
   if(card == 13 || card == 14) return weight_gold(get_special(era, card, player)[1], player);
+  
  }
  return 0;
 }
@@ -111,6 +112,9 @@ int weight_buildcard(int era, int card, int player)
 {
  int weight = data_potentialvps(player, era, card);
  weight -= data_gettotvps(player);
+ if(cards_gettype(era, card) == STRUCTURE)
+  weight *= 3;
+  weight /= 2;
  if(cards_gettype(era, card) == MILITARY)
   weight += weight_military(era, card, player);
  if(era == 2) return weight;

@@ -44,8 +44,8 @@ int* get_special(int era, int card, int player)
    ret[0] = ret[1] = cardcounter(data_getbuilt(player), INDUSTRY) * 2;
    break;
   case 208: //Arena: 3 coins and 1 vp for each completed wonder stage.
-   ret[1] = data_getwonderstages(player);
-   ret[0] = 3*ret[1];
+   ret[0] = data_getwonderstages(player);
+   ret[1] = 3*ret[1];
    break;
   case 218: //Workers Guild: 1 vp for each resource card owned by adjacent players.
    ret[0] += cardcounter(data_getbuilt(data_geteast(player)), RESOURCE);

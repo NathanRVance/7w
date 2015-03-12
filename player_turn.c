@@ -41,11 +41,12 @@ int player_build(int focus, int cursor, int player)
    data_addgold(3, player);
    return 1;
   } else if(choice == 2) {
-   if(data_canafford(player, data_getwonder(player), data_getnextwonderstage(player))) {
+   if(data_getnextwonderstage(player) == -1) {
+    postmessage("Wonder already complete.");
+   } else if(data_canafford(player, data_getwonder(player), data_getnextwonderstage(player))) {
     data_buildwonder(player, hand[cursor]);
     return 1;
-   }
-   else postmessage("Can't afford this!");
+   } else postmessage("Can't afford this!");
   }
  }
  return 0;

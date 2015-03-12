@@ -186,11 +186,11 @@ int data_getnextwonderstage(int p)
  int stage = data_getwonderstages(p);
  int wonder = data_getwonder(p);
  if(side == 0) {
-  if(stage >= 2) return -1;
+  if(stage >= 3) return -1;
  } else {
-  if(wonder == 3 && stage >= 1) return -1;
-  if(wonder != 9 && stage >= 2) return -1;
-  if(wonder == 9 && stage >= 3) return -1;
+  if(wonder == 3 && stage >= 2) return -1;
+  if(wonder != 9 && stage >= 3) return -1;
+  if(wonder == 9 && stage >= 4) return -1;
  }
  return side*3+1+stage;
 }
@@ -410,7 +410,7 @@ int data_iscouponed(int p, int era, int card)
  int* coupons = cards_getcouponed(era, card);
  int i;
  for(i = 0; i < 3; i += 2) {
-  if(coupons[1+1])
+  if(coupons[i+1])
    if(data_hasbuilt(p, coupons[i], coupons[i+1])) return 1;
  }
 }
