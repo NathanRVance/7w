@@ -16,7 +16,6 @@ int io_printtext(int xorigin, int y, int width, char* text);
 void io_printplain(int x, int y, char *s);
 void io_printcolor(int x, int y, int color, char *s);
 char* getname(int res);
-int view_refresh(int focus, int cursor, int player);
 char* itoa(int i);
 
 static int tradebuffer[3][GOLD+1];
@@ -85,7 +84,6 @@ int* trade_gettradables(int player, int direction)
 
 void trade_print(int x, int y, int player, int cursorx, int cursory)
 {
- view_refresh(data_numplayers(), data_numcards(player), player);
  char s[40];
  int *east = trade_gettradables(player, 0);
  int *west = trade_gettradables(player, 1);

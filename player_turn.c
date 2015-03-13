@@ -25,12 +25,12 @@ int postoptions(int x, int y);
 int trade_routine(int x, int y, int player);
 void trade_commit(int player);
 
-int player_build(int focus, int cursor, int player)
+int player_build(int focus, int cursor, int player, int y)
 {
  int *hand = data_gethand(player);
  if(focus == data_numplayers()) {
   if(hand[cursor] == -1) return 0;
-  int choice = postoptions(62, 20);
+  int choice = postoptions(61, y);
   if(choice == 0) {
    if(data_hasbuiltname(player, data_getera(), hand[cursor])) {
     postmessage("Cannot have two of the same card!");
@@ -75,7 +75,7 @@ void player_turn(int player)
    case LEFT: focus--;
     break;
    case ENTER:
-    if(player_build(focus, cursor, player)) {
+    if(player_build(focus, cursor, player, tradey)) {
      trade_commit(player);
      clearmessage();
      return;
@@ -92,7 +92,7 @@ void player_turn(int player)
   if(focus == data_numplayers()) {
    if(cursor < 0) cursor = numcards-2;
    if(cursor >= numcards-1) {
-    if(trade_routine(61, tradey, player)) cursor = 0;
+    if(trade_routine(61, view_refresh(focus, cursor, player), player)) cursor = 0;
     else cursor = numcards-2;
    }
   }

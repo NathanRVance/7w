@@ -33,14 +33,14 @@ void posthelp()
 
 int postoptions(int x, int y)
 {
- int width = 26;
+ int width = 28;
  int yorig = y;
  int cursor = 0;
- char* a = "Buy Sell Wonder Cancel";
+ char* a = "Buy Sell Wonder   Cancel";
  char* b = " *";
  char* c = "     *";
  char* d = "           *";
- char* e = "                  *";
+ char* e = "                    *";
  while(1) {
   y = yorig;
   io_printborder(x, y++, width);

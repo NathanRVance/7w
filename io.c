@@ -193,22 +193,19 @@ int io_printhand(int x, int y, int player, int cursor)
 {
  int *hand = data_gethand(player);
  int i;
- int cursed = 0;
  io_printborder(x, y++, 28);
  y = io_printtext(x, y, 28, "          Hand");
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   io_printname(x, y++, data_getera(), hand[i]);
   if(i == cursor) {
    mvprintw(y-1, x+25, "*");
-   cursed = 1;
   }
  }
  y = io_printtext(x, y, 28, " Trade...");
- if(i == cursor) {
+ if(i == cursor)
   mvprintw(y-1, x+25, "*");
-  //trade_print(x, y, player, -1, -1);
- }
- else if(cursed) io_printcard(x, y, data_getera(), hand[cursor], player);
+ else if(cursor >= 0 && cursor < 7 && hand[cursor] != -1)
+  y = io_printcard(x, y, data_getera(), hand[cursor], player);
  else io_printborder(x, y++, 28);
  return y;
 }
