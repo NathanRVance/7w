@@ -71,8 +71,10 @@ void player_turn(int player)
    case DOWN: cursor++;
     break;
    case RIGHT: focus++;
+    cursor = 0;
     break;
    case LEFT: focus--;
+    cursor = 0;
     break;
    case ENTER:
     if(player_build(focus, cursor, player, tradey)) {
@@ -82,6 +84,7 @@ void player_turn(int player)
     }
     break;
    case '\t': focus = (focus+1)%(data_numplayers()+1);
+    cursor = 0;
     break;
    case 'h': posthelp();
     break;

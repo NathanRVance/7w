@@ -40,7 +40,7 @@ main()
 {
  io_init();
  cards_init();
- data_init(7);
+ data_init(4);
  main_routine();
  halt();
 }

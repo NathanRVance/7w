@@ -94,7 +94,7 @@ void trade_print(int x, int y, int player, int cursorx, int cursory)
  y = io_printtext(x, y, width, s);
  int i;
  for(i = 0; i < GOLD+1; i++) {
-  sprintf(s, "%-7s %d %c| %-7s %d %c", getname(i), west[i], (cursorx == 1 && cursory == i)? '*' : ' ', getname(i), east[i], (cursorx == 0 && cursory == i)? '*' : ' ');
+  sprintf(s, "%-7s%2d %c| %-7s %d %c", getname(i), west[i], (cursorx == 1 && cursory == i)? '*' : ' ', getname(i), east[i], (cursorx == 0 && cursory == i)? '*' : ' ');
   y = io_printtext(x, y, width, s);
   if(tradebuffer[1][i])
    io_printcolor(x+10, y-1, 31, itoa(west[i]));

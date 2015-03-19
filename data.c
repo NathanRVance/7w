@@ -19,6 +19,7 @@ char* cards_getname(int wonder, int stage);
 void io_printborder(int x, int y, int width);
 int io_printtext(int xorigin, int y, int width, char* text);
 int io_getkey();
+int data_haswonderstage(int p, int wonder, int stage);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -314,6 +315,7 @@ void data_removedefinites(int p, int *cost)
  }
 }
 
+
 int** data_getindefinites(int p)
 {
  int i, j, k, l, m, *prod;
@@ -338,6 +340,22 @@ int** data_getindefinites(int p)
    }
   }
  }
+ if(data_haswonderstage(p, 4, 2) || data_haswonderstage(p, 4, 4)) {
+  m = 0;
+  prod = cards_getproduction(1, 12); //production for caravansery
+  for(l = 0; l < GOLD; l++) {
+   if(prod[l]) ret[k][m++] = l;
+  }
+  k++;
+ }
+ if(data_haswonderstage(p, 4, 5)) {
+  m = 0;
+  prod = cards_getproduction(1, 11); //production for forum
+  for(l = 0; l < GOLD; l++) {
+   if(prod[l]) ret[k][m++] = l;
+  }
+  k++;
+ }
  return ret;
 }
 
@@ -348,7 +366,7 @@ int* data_gettradables(int p)
  for(i = 0; i < GOLD+1; i++) ret[i] = 0;
  for(i = 0; i < 3; i++) {
   for(j = 0; j < 7; j++) {
-   if(player[p][i][j] != -1) {
+   if(player[p][i][j] != -1 && (cards_gettype(i, player[p][i][j]) == RESOURCE || cards_gettype(i, player[p][i][j]) == INDUSTRY)) {
     prod = cards_getproduction(i, player[p][i][j]);
     for(k = 0; k < GOLD; k++) {
      ret[k] += prod[k];
