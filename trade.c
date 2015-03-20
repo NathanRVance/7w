@@ -51,6 +51,17 @@ void trade_clear(int player)
    tradebuffer[i][j] = 0;
 }
 
+void trade_set(int player, int **trade)
+{
+ trade_clear(player);
+ int i, j;
+ for(i = 0; i < 3; i++) {
+  for(j = 0; j < GOLD; j++) {
+   tradebuffer[i][j] = trade[i][j];
+  }
+ }
+}
+
 //gold amounts relative to player
 void trade_addgold(int player, int amnt, int direction)
 {
