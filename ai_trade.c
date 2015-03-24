@@ -1,13 +1,65 @@
 #include "7w.h"
 
+/*
+A brief note on why we have separated the functionality of trade.c and ai_trade.c in regards to gold transfer:
+This class is designed for the sole purpose of analyzing potential transactions without commiting to any. Therefore, such handy methods as trade_commit are not used.
+*/
+
 int data_getgold(int p);
 int get_trade(int player, int type, int direction);
 int data_canafford(int p, int era, int card);
 void trade_clear(int player);
+void trade_set(int player, int trade[3][GOLD]);
+int* trade_gettradables(int player, int direction);
 
-int ai_trade(int player, int *cost)
+void ai_cleartrade(int trade[3][GOLD])
 {
- while(data_getgold(player) > 1) {
-  //finish trade_set and this
+ int i, j;
+ for(i = 0; i < 3; i++)
+  for(j = 0; j < GOLD; j++)
+   trade[i][j] = 0;
+}
+
+void recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int card)
+{
+ int i, j;
+ if(data_canafford(player, era, card)) {
+  if(cost < ret[2] || ret[2] == 0) {
+   ret[2] = cost;
+   ret[0] = ret[1] = 0;
+   for(i = 0; i < 2; i++) {
+    for(j = 0; j < GOLD; j++) {
+     ret[i] += get_trade(player, j, i) * trade[i][j];
+    }
+   }
+  }
+  return; //if we can afford it, don't bother recursing further.
  }
+ for(i = 0; i < 2; i++) {
+  for(j = 0; j < GOLD; j++) {
+   if(data_getgold(player) - cost - get_trade(player, j, i) >= 0 && trade_gettradables(player, i)[j] >= trade[i][j]+1) {
+    trade[i][j]++;
+    trade[2][j]++;
+    trade_set(player, trade);
+    recurse(ret, cost+get_trade(player, j, i), trade, player, era, card);
+    trade[i][j]--;
+    trade[2][j]--;
+   }
+  }
+ }
+}
+
+int* ai_trade(int player, int era, int card)
+{
+ static int ret[3]; //east gold, west gold, player gold
+ int trade[3][GOLD];
+ int i;
+ for(i = 0; i < 3; i++)
+  ret[i] = 0;
+ ai_cleartrade(trade);
+ int gold = data_getgold(player);
+ recurse(ret, 0, trade, player, era, card);
+ ai_cleartrade(trade);
+ trade_set(player, trade);
+ return ret;
 }

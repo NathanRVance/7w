@@ -288,9 +288,8 @@ int data_productiontype(int e, int card)
 int* data_getdefinites(int p)
 {
  int *ret = get_intarray(GOLD);
- int *trade = trade_buffer();
  int i, j, k, *prod;
- for(i = 0; i < GOLD; i++) ret[i] = trade[i];
+ for(i = 0; i < GOLD; i++) ret[i] = 0;
  for(i = 0; i < 3; i++) {
   for(j = 0; j < 7; j++) {
    if(data_productiontype(i, player[p][i][j]) == 1) {
@@ -315,6 +314,15 @@ void data_removedefinites(int p, int *cost)
  }
 }
 
+void data_removetraded(int p, int *cost)
+{
+ int *trade = trade_buffer();
+ int i;
+ for(i = 0; i < GOLD; i++) {
+  cost[i] -= trade[i];
+  if(cost[i] < 0) cost[i] = 0;
+ }
+}
 
 int** data_getindefinites(int p)
 {
@@ -455,6 +463,7 @@ int data_canafford(int p, int era, int card)
  if(cost[GOLD] > data_getgold(p)) return 0;
  int i, j, k;
  data_removedefinites(p, cost);
+ data_removetraded(p, cost);
  if(data_iszerocost(cost)) return 1;
  return recurse(cost, data_getindefinites(p), 0);
 }

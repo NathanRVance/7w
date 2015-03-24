@@ -51,7 +51,7 @@ void trade_clear(int player)
    tradebuffer[i][j] = 0;
 }
 
-void trade_set(int player, int **trade)
+void trade_set(int player, int trade[3][GOLD])
 {
  trade_clear(player);
  int i, j;
