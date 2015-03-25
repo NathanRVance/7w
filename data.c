@@ -25,6 +25,7 @@ int data_haswonderstage(int p, int wonder, int stage);
 #define DATAGOLD 0
 
 static int decks[3][49];
+static int discards[3][49];
 static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats, vps(partial))
 static int buffer[7][3];
 static int hands[7][7];
@@ -87,6 +88,9 @@ void data_init(int n)
   for(j = 0; j < numplayers*7; j++)
    decks[i][j] = deck[j];
  }
+ for(i = 0; i < 3; i++)
+  for(j = 0; j < 49; j++)
+   discards[i][j] = -1;
  era = -1;
  data_nextera();
  data_distributewonders(n);
@@ -240,7 +244,23 @@ int data_numplayers()
  return numplayers;
 }
 
-void data_discard(int p, int card)
+int** data_getdiscards()
+{
+ static int **ret;
+ int i;
+ for(i = 0; i < 3; i++)
+  ret[i] = discards[i];
+ return ret;
+}
+
+void data_deletediscard(int era, int card)
+{
+ int i;
+ for(i = 0; discards[era][i] != card && i < 48; i++);
+ discards[era][i] = -1;
+}
+
+void data_remove(int p, int card) //as in, removes it from the hand
 {
  int i;
  int *hand = hands[(p+turn)%numplayers];
@@ -250,6 +270,14 @@ void data_discard(int p, int card)
  for(i = 0; i < 7; i++) turngoldbuffer[i] = 0; //end of turn
 }
 
+void data_discard(int p, int card)
+{
+ data_remove(p, card);
+ int i;
+ for(i = 0; discards[era][i] != -1 && i < 49; i++);
+ discards[era][i] = card;
+}
+
 void data_build(int p, int card)
 {
  buffer[p][0] = card; //will be added to player array at end of turn
@@ -257,7 +285,7 @@ void data_build(int p, int card)
  data_addgold(cards_getproduction(era, card)[GOLD], p);
  data_addvps(cards_getproduction(era, card)[VP], p);
  data_addgold(get_special(era, card, p)[1], p);
- data_discard(p, card);
+ data_remove(p, card);
 }
 
 void data_buildwonder(int p, int card)
@@ -266,7 +294,7 @@ void data_buildwonder(int p, int card)
  data_addgold(cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD] * -1, p);
  data_addgold(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD], p);
  data_addvps(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[VP], p);
- data_discard(p, card);
+ data_remove(p, card);
 }
 
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources

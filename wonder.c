@@ -36,7 +36,7 @@ int wonder_numstages(int player)
  return 3;
 }
 
-int print_wonder(int x, int y, int player, int cursor)
+int* print_wonder(int x, int y, int player, int cursor)
 {
  int i, j;
  io_printborder(x, y++, 28);
@@ -97,10 +97,19 @@ int print_wonder(int x, int y, int player, int cursor)
  io_printborder(x, y, 28);
 
  //Info about component
- if(cursor >= 0 && cursor < wonder_numstages(player))
- return io_printcard(x, y, data_getwonder(player), cursor+1+3*data_getwonderside(player), player);
- if(cursor >= wonder_numstages(player))
-  return io_printcard(x, y, built[print], built[print+1], player);
+ static int ret[2];
+ ret[0] = ret[1] = -1; 
+ if(cursor >= 0 && cursor < wonder_numstages(player)) {
+  ret[0] = data_getwonder(player);
+  ret[1] = cursor+1+3*data_getwonderside(player), player;
+ }
+ //return io_printcard(x, y, data_getwonder(player), cursor+1+3*data_getwonderside(player), player);
+ if(cursor >= wonder_numstages(player)) {
+  ret[0] = built[print];
+  ret[1] = built[print+1];
+ }
+ //return io_printcard(x, y, built[print], built[print+1], player);
+ return ret;
 }
 
 //dir is 0 for none, 1 for east, 2 for west
