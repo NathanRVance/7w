@@ -36,6 +36,23 @@ int wonder_numstages(int player)
  return 3;
 }
 
+int print_cards(int x, int y, int *cards, int cursor)
+{
+ int i = 0;
+ int j;
+ int print = -1;
+ for(j = 0; cards[j] != -1; j+=2) {
+  io_printname(x, y++, cards[j], cards[j+1]);
+  if(cursor == i++) {
+   io_printplain(x+25, y-1, "*");
+   print = j;
+  }
+ }
+ if(j == 0) y--;
+ io_printborder(x, y, 28);
+ return y;
+}
+
 int* print_wonder(int x, int y, int player, int cursor)
 {
  int i, j;
@@ -85,16 +102,8 @@ int* print_wonder(int x, int y, int player, int cursor)
 
  //Print what has been built
  int *built = data_getbuilt(player);
- int print = -1;
- for(j = 0; built[j] != -1; j+=2) {
-  io_printname(x, y++, built[j], built[j+1]);
-  if(cursor == i++) {
-   io_printplain(x+25, y-1, "*");
-   print = j;
-  }
- }
- if(j == 0) y--;
- io_printborder(x, y, 28);
+ y = print_cards(x, y, built, cursor - i);
+ int print = 2*(cursor - i);
 
  //Info about component
  static int ret[2];
@@ -103,12 +112,10 @@ int* print_wonder(int x, int y, int player, int cursor)
   ret[0] = data_getwonder(player);
   ret[1] = cursor+1+3*data_getwonderside(player), player;
  }
- //return io_printcard(x, y, data_getwonder(player), cursor+1+3*data_getwonderside(player), player);
  if(cursor >= wonder_numstages(player)) {
   ret[0] = built[print];
   ret[1] = built[print+1];
  }
- //return io_printcard(x, y, built[print], built[print+1], player);
  return ret;
 }
 

@@ -14,6 +14,8 @@ void view_refresh(int focus, int cursor, int player);
 int data_numplayers();
 void data_endturn();
 int data_getera();
+void data_setai(int p);
+int data_isai(int p);
 
 void halt()
 {
@@ -27,7 +29,7 @@ main_routine()
 {
  int player = 0;
  while(1) {
-  if(ais[player]) ai_turn(player);
+  if(data_isai(player)) ai_turn(player);
   else player_turn(player);
   if(++player == data_numplayers()) {
    data_endturn();
@@ -41,6 +43,10 @@ main()
  io_init();
  cards_init();
  data_init(4);
+ int i;
+ for(i = 0; i < 7; i++) {
+  if(ais[i]) data_setai(i);
+ }
  main_routine();
  halt();
 }

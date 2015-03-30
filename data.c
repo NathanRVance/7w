@@ -20,6 +20,7 @@ void io_printborder(int x, int y, int width);
 int io_printtext(int xorigin, int y, int width, char* text);
 int io_getkey();
 int data_haswonderstage(int p, int wonder, int stage);
+void special_action(int player, int wonder, int stage);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -27,8 +28,9 @@ int data_haswonderstage(int p, int wonder, int stage);
 static int decks[3][49];
 static int discards[3][49];
 static int player[7][4][7]; //3 eras and extra stuff (wonder, wonder side, wonder stages completed, gold, military wins, defeats, vps(partial))
-static int buffer[7][3];
+static int buffer[7][4];
 static int hands[7][7];
+static int ais[7];
 static int numplayers;
 static int era;
 static int turn;
@@ -50,15 +52,19 @@ void data_sorthands()
 }
 
 void data_endgame();
+void data_discard(int p, int card);
 
 void data_nextera()
 {
+ int i, j, k;
+ for(i = 0; i < numplayers; i++) {
+  data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
+ }
  war();
  if(era == 2) data_endgame();
  era++;
  turn = 0;
  totturns = 0;
- int i, j, k;
  k = 0;
  for(i = 0; i < numplayers; i++)
   for(j = 0; j < 7; j++)
@@ -76,6 +82,8 @@ void data_distributewonders()
  for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
+  player[0][3][0] = 8; //delete these lines later
+  player[0][3][1] = 1; //this one too!
  }
 }
 
@@ -120,12 +128,31 @@ void data_endturn()
   }
   player[i][3][3] += buffer[i][1]; //change in gold
   player[i][3][6] += buffer[i][2];
+  if(buffer[i][3]) {
+   buffer[i][3] = 0; //do this early to allow setting of flag as special action
+   special_action(i, data_getwonder(i), data_getwonderside(i)*3+1+data_getwonderstages(i));
+  }
   buffer[i][0] = -1;
   buffer[i][1] = 0;
   buffer[i][2] = 0;
  }
  totturns++;
  if(totturns == 6) data_nextera();
+}
+
+int data_turnnum()
+{
+ return totturns;
+}
+
+void data_setai(int p)
+{
+ ais[p] = 1;
+}
+
+int data_isai(int p)
+{
+ return ais[p];
 }
 
 int data_geteast(int p)
@@ -239,17 +266,28 @@ void data_addvps(int amnt, int p)
  buffer[p][2] += amnt;
 }
 
+void data_setspecialflag(int p)
+{
+ buffer[p][3] = 1;
+}
+
 int data_numplayers()
 {
  return numplayers;
 }
 
-int** data_getdiscards()
+int* data_getdiscards()
 {
- static int **ret;
- int i;
- for(i = 0; i < 3; i++)
-  ret[i] = discards[i];
+ static int ret[150];
+ int i, j, k;
+ for(i = 0; i < 150; i++) ret[i] = -1;
+ k = 0;
+ for(i = 0; i < 3; i++) {
+  for(j = 0; discards[i][j] != -1 && j < 49; j++) {
+   ret[k++] = i;
+   ret[k++] = discards[i][j];
+  }
+ }
  return ret;
 }
 
@@ -278,13 +316,18 @@ void data_discard(int p, int card)
  discards[era][i] = card;
 }
 
+void data_freebuild(int p, int e, int card)
+{
+ data_addgold(cards_getproduction(e, card)[GOLD], p);
+ data_addvps(cards_getproduction(e, card)[VP], p);
+ data_addgold(get_special(e, card, p)[1], p);
+}
+
 void data_build(int p, int card)
 {
  buffer[p][0] = card; //will be added to player array at end of turn
  data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
- data_addgold(cards_getproduction(era, card)[GOLD], p);
- data_addvps(cards_getproduction(era, card)[VP], p);
- data_addgold(get_special(era, card, p)[1], p);
+ data_freebuild(p, era, card);
  data_remove(p, card);
 }
 
@@ -294,6 +337,7 @@ void data_buildwonder(int p, int card)
  data_addgold(cards_getcost(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD] * -1, p);
  data_addgold(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD], p);
  data_addvps(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[VP], p);
+ data_setspecialflag(p);
  data_remove(p, card);
 }
 
