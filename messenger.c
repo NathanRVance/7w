@@ -63,3 +63,32 @@ int postoptions(int x, int y)
   cursor = cursor%4;
  }
 }
+
+int postyn(int x, int y, char *message)
+{
+ int yorig = y;
+ int width = 28;
+ int cursor = 0;
+ char* a = " * No         Yes  ";
+ char* b = "   No       * Yes  ";
+ while(1) {
+  y = yorig;
+  io_printborder(x, y++, width);
+  y = io_printtext(x, y++, width, message);
+  if(cursor == 0) y = io_printtext(x, y, width, a);
+  if(cursor == 1) y = io_printtext(x, y, width, b);
+  io_printborder(x, y++, width);
+  switch(io_getkey()) {
+   case LEFT: cursor--;
+    break;
+   case RIGHT: cursor++;
+    break;
+   case ENTER: return cursor;
+    break;
+   default: break;
+  }
+  if(cursor < 0) cursor = 1;
+  cursor = cursor%2;
+ }
+ return cursor;
+}

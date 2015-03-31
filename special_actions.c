@@ -12,6 +12,7 @@ void io_printborder(int x, int y, int width);
 int io_getkey();
 void posthelp();
 int data_isai(int p);
+void data_setfreebuild(int p);
 
 void Halicarnassus(int player)
 {
@@ -83,6 +84,11 @@ void special_action(int player, int wonder, int stage)
     if(data_isai(player));
     else;
    }
+  }
+ }
+ if(wonder == 7) { //Olympia
+  if(stage == 2) {
+   data_setfreebuild(player);
   }
  }
 }

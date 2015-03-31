@@ -36,6 +36,7 @@ static int era;
 static int turn;
 static int totturns;
 static int turngoldbuffer[7];
+static int hasfreebuild; //holds player that has a free build. Once set, will be that player, or (player+1)*-1 if already used.
 
 void data_sorthands()
 {
@@ -70,6 +71,8 @@ void data_nextera()
   for(j = 0; j < 7; j++)
    hands[i][j] = decks[era][k++];
  data_sorthands();
+ if(hasfreebuild < 0 && hasfreebuild != -10)
+  hasfreebuild = hasfreebuild * -1 - 1;
 }
 
 void data_distributewonders()
@@ -82,13 +85,14 @@ void data_distributewonders()
  for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
-  player[0][3][0] = 8; //delete these lines later
-  player[0][3][1] = 1; //this one too!
+  player[0][3][0] = 7; //delete these lines later
+  player[0][3][1] = 0; //this one too!
  }
 }
 
 void data_init(int n)
 {
+ hasfreebuild = -10;
  numplayers = n;
  int i, j, k, *deck;
  for(i = 0; i < 3; i++) {
@@ -138,6 +142,16 @@ void data_endturn()
  }
  totturns++;
  if(totturns == 6) data_nextera();
+}
+
+int data_setfreebuild(int p)
+{
+ hasfreebuild = p;
+}
+
+int data_spendfreebuild()
+{
+ hasfreebuild = (hasfreebuild+1)*-1;
 }
 
 int data_turnnum()
@@ -530,14 +544,17 @@ int data_iscouponed(int p, int era, int card)
 
 int data_canafford(int p, int era, int card)
 {
+ int ret;
  if(data_iscouponed(p, era, card)) return 1;
  int *cost = cards_getcost(era, card);
- if(cost[GOLD] > data_getgold(p)) return 0;
  int i, j, k;
  data_removedefinites(p, cost);
  data_removetraded(p, cost);
  if(data_iszerocost(cost)) return 1;
- return recurse(cost, data_getindefinites(p), 0);
+ ret = recurse(cost, data_getindefinites(p), 0) && (cost[GOLD] <= data_getgold(p));
+ if(ret) return 1;
+ if(p == hasfreebuild) return 2;
+ return 0;
 }
 
 int data_haswonderstage(int p, int wonder, int stage)

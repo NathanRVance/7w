@@ -24,10 +24,13 @@ void clearmessage();
 int postoptions(int x, int y);
 int trade_routine(int x, int y, int player);
 void trade_commit(int player);
+int data_spendfreebuild();
+int postyn(int x, int y, char *message);
 
 int player_build(int focus, int cursor, int player, int y)
 {
  int *hand = data_gethand(player);
+ int afford = data_canafford(player, data_getera(), hand[cursor]);
  if(focus == data_numplayers()) {
   if(hand[cursor] == -1) return 0;
   int choice = postoptions(61, y);
@@ -36,8 +39,9 @@ int player_build(int focus, int cursor, int player, int y)
     postmessage("Cannot have two of the same card!");
     return 0;
    }
-   if(data_canafford(player, data_getera(), hand[cursor])) {
+   if(afford == 1 || (afford == 2 && postyn(61, y, "Spend free build?"))) {
     data_build(player, hand[cursor]);
+    if(afford == 2) data_spendfreebuild();
     return 1;
    }
    else postmessage("Can't afford this!");

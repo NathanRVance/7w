@@ -32,7 +32,7 @@ int* ai_bestcard(int *hand, int player) //return card
   temp = weight_buildcard(data_getera(), hand[i], player);
   if(data_hasbuiltname(player, data_getera(), hand[i]))
    temp = 0;
-  else if(! data_canafford(player, data_getera(), hand[i])) {
+  else if(data_canafford(player, data_getera(), hand[i]) != 1) {
    trade = ai_trade(player, data_getera(), hand[i]);
    if(trade[2]) temp -= trade[2] / 3;
    else temp = 0;
