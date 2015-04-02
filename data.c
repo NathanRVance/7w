@@ -58,9 +58,6 @@ void data_discard(int p, int card);
 void data_nextera()
 {
  int i, j, k;
- for(i = 0; i < numplayers; i++) {
-  data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
- }
  war();
  if(era == 2) data_endgame();
  era++;
@@ -85,8 +82,8 @@ void data_distributewonders()
  for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
-  player[0][3][0] = 7; //delete these lines later
-  player[0][3][1] = 0; //this one too!
+  player[0][3][0] = 8; //delete these lines later
+  player[0][3][1] = 1; //this one too!
  }
 }
 
@@ -117,12 +114,18 @@ void data_init(int n)
 
 void data_endturn()
 { //remember, player numbers are arranged clockwise
+ totturns++;
+ int i, j;
+ if(totturns == 6) { //Do this first for some special moves
+  for(i = 0; i < numplayers; i++) {
+   data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
+  }
+ }
  if(era == 0 || era == 2) //pass to the left
   turn++;
  else  //pass to the right
   turn--;
  if(turn < 0) turn = numplayers-1;
- int i, j;
  for(i = 0; i < numplayers; i++) {
   if(buffer[i][0] == -2) {
    player[i][3][2]++;
@@ -140,7 +143,6 @@ void data_endturn()
   buffer[i][1] = 0;
   buffer[i][2] = 0;
  }
- totturns++;
  if(totturns == 6) data_nextera();
 }
 
@@ -332,6 +334,9 @@ void data_discard(int p, int card)
 
 void data_freebuild(int p, int e, int card)
 {
+ int i;
+ for(i = 0; player[p][e][i] != -1; i++);
+ player[p][e][i] = card;
  data_addgold(cards_getproduction(e, card)[GOLD], p);
  data_addvps(cards_getproduction(e, card)[VP], p);
  data_addgold(get_special(e, card, p)[1], p);
@@ -340,8 +345,10 @@ void data_freebuild(int p, int e, int card)
 void data_build(int p, int card)
 {
  buffer[p][0] = card; //will be added to player array at end of turn
+ data_addgold(cards_getproduction(era, card)[GOLD], p);
+ data_addvps(cards_getproduction(era, card)[VP], p);
+ data_addgold(get_special(era, card, p)[1], p);
  data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
- data_freebuild(p, era, card);
  data_remove(p, card);
 }
 

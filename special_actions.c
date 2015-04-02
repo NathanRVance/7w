@@ -10,9 +10,11 @@ int print_cards(int x, int y, int *cards, int cursor);
 int io_printtext(int xorigin, int y, int width, char* text);
 void io_printborder(int x, int y, int width);
 int io_getkey();
+int io_printcard(int x, int y, int wonder, int stage, int player);
 void posthelp();
 int data_isai(int p);
 void data_setfreebuild(int p);
+int view_refresh(int focus, int cursor, int player, int mode);
 
 void Halicarnassus(int player)
 {
@@ -26,10 +28,8 @@ void Halicarnassus(int player)
  int bottom = 0;
  while(discards[numcards++] != -1 && numcards < 50);
  numcards /= 2;
- io_printborder(x, y++, 28);
- y = io_printtext(x, y, 28, "         Discards");
  while(1) {
-  bottom = print_cards(x, y, discards, cursor);
+  view_refresh(focus, cursor, player, 1); 
   switch(io_getkey()) {
    case UP: cursor--;
     break;

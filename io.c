@@ -189,24 +189,36 @@ int io_printcard(int x, int y, int era, int card, int player)
  return y;
 }
 
-int io_printhand(int x, int y, int player, int cursor)
+int* data_getdiscards();
+int print_cards(int x, int y, int *cards, int cursor);
+
+int io_printhand(int x, int y, int player, int cursor, int mode) //mode 0 is normal, 1 is discard search
 {
- int *hand = data_gethand(player);
+ int *hand;
+ if(mode) hand = data_getdiscards();
+ else hand = data_gethand(player);
  int i;
  io_printborder(x, y++, 28);
- y = io_printtext(x, y, 28, "          Hand");
- for(i = 0; hand[i] != -1 && i < 7; i++) {
-  io_printname(x, y++, data_getera(), hand[i]);
-  if(i == cursor) {
-   mvprintw(y-1, x+25, "*");
-  }
+ if(mode) {
+  y = io_printtext(x, y, 28, "         Discards");
+  y = print_cards(x, y, hand, cursor);
+  y = io_printcard(x, y, hand[cursor*2], hand[cursor*2+1], player);
  }
- y = io_printtext(x, y, 28, " Trade...");
- if(i == cursor)
-  mvprintw(y-1, x+25, "*");
- else if(cursor >= 0 && cursor < 7 && hand[cursor] != -1)
-  y = io_printcard(x, y, data_getera(), hand[cursor], player);
- else io_printborder(x, y++, 28);
+ else {
+  y = io_printtext(x, y, 28, "          Hand");
+  for(i = 0; hand[i] != -1 && i < 7; i++) {
+   io_printname(x, y++, data_getera(), hand[i]);
+   if(i == cursor) {
+    mvprintw(y-1, x+25, "*");
+   }
+  }
+  y = io_printtext(x, y, 28, " Trade...");
+  if(i == cursor)
+   mvprintw(y-1, x+25, "*");
+  else if(cursor >= 0 && cursor < 7 && hand[cursor] != -1)
+   y = io_printcard(x, y, data_getera(), hand[cursor], player);
+  else io_printborder(x, y++, 28);
+ }
  return y;
 }
 

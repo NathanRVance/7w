@@ -14,7 +14,7 @@ int data_canafford(int p, int era, int card);
 int data_getwonder(int p);
 int data_getnextwonderstage(int p);
 int data_hasbuiltname(int p, int era, int card);
-int view_refresh(int focus, int cursor, int player);
+int view_refresh(int focus, int cursor, int player, int mode);
 int wonder_numstages(int player);
 int* cards_getcost(int era, int card);
 int data_numbuilt(int p);
@@ -26,6 +26,7 @@ int trade_routine(int x, int y, int player);
 void trade_commit(int player);
 int data_spendfreebuild();
 int postyn(int x, int y, char *message);
+void halt();
 
 int player_build(int focus, int cursor, int player, int y)
 {
@@ -68,7 +69,7 @@ void player_turn(int player)
  int focus = data_numplayers();
  while(1) {
   numcards = data_numcards(player)+1; //include trade option in hand
-  tradey = view_refresh(focus, cursor, player);
+  tradey = view_refresh(focus, cursor, player, 0);
   switch(io_getkey()) {
    case UP: cursor--;
     break;
@@ -92,6 +93,9 @@ void player_turn(int player)
     break;
    case 'h': posthelp();
     break;
+   case 'q':
+    if(postyn(61, tradey, "Are you sure you want to quit?")) halt();
+    break;
    default: break;
   }
   if(focus < 0) focus = data_numplayers();
@@ -99,7 +103,7 @@ void player_turn(int player)
   if(focus == data_numplayers()) {
    if(cursor < 0) cursor = numcards-2;
    if(cursor >= numcards-1) {
-    if(trade_routine(61, view_refresh(focus, cursor, player), player)) cursor = 0;
+    if(trade_routine(61, view_refresh(focus, cursor, player, 0), player)) cursor = 0;
     else cursor = numcards-2;
    }
   }
