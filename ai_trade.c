@@ -20,9 +20,10 @@ void ai_cleartrade(int trade[3][GOLD])
    trade[i][j] = 0;
 }
 
-void recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int card)
+int recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int card)
 {
  int i, j;
+ int tradea, tradeb;
  if(data_canafford(player, era, card)) {
   if(cost < ret[2] || ret[2] == 0) {
    ret[2] = cost;
@@ -33,20 +34,21 @@ void recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int c
     }
    }
   }
-  return; //if we can afford it, don't bother recursing further.
+  return 1; //if we can afford it, don't bother recursing further.
  }
  for(i = 0; i < 2; i++) {
   for(j = 0; j < GOLD; j++) {
    if(data_getgold(player) - cost - get_trade(player, j, i) >= 0 && trade_gettradables(player, i)[j] >= trade[i][j]+1) {
-    trade[i][j]++;
-    trade[2][j]++;
+    tradea = trade[i][j]++;
+    tradeb = trade[2][j]++;
     trade_set(player, trade);
-    recurse(ret, cost+get_trade(player, j, i), trade, player, era, card);
-    trade[i][j]--;
-    trade[2][j]--;
+    if(recurse(ret, cost+get_trade(player, j, i), trade, player, era, card)) return 1;
+    trade[i][j] = tradea;
+    trade[2][j] = tradeb;
    }
   }
  }
+ return 0;
 }
 
 int* ai_trade(int player, int era, int card)

@@ -16,9 +16,11 @@ int get_trade(int player, int type, int direction);
 int cards_gettype(int era, int card);
 int* get_science(int player);
 int* get_special(int era, int card, int player);
+int* get_intarray(int size);
 int data_potentialvps(int p, int era, int card);
 int data_gettotvps(int p);
 int military_might(int player);
+int* ai_trade(int player, int era, int card);
 
 int weight_science(int era, int card, int player)
 {
@@ -126,8 +128,19 @@ int weight_buildcard(int era, int card, int player)
  return weight;
 }
 
-int weight_buildwonder(int player)
+int* weight_buildwonder(int player)
 {
- if(! data_canafford(player, data_getwonder(player), data_getnextwonderstage(player))) return 0;
- return (data_getwonderstages(player)+2) * 2;
+ int *trade = get_intarray(3);
+ static int ret[4];
+ ret[0] = (data_getwonderstages(player)+2) * 2;
+ ret[1] = ret[2] = ret[3] = 0;
+ if(data_canafford(player, data_getwonder(player), data_getnextwonderstage(player)) != 1) {
+  trade = ai_trade(player, data_getwonder(player), data_getnextwonderstage(player));
+  if(trade[2]) ret[0] -= trade[2] / 3;
+  else ret[0] = 0;
+  ret[1] = trade[0];
+  ret[2] = trade[1];
+  ret[3] = trade[2];
+ }
+ return ret;
 }

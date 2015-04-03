@@ -21,6 +21,9 @@ int io_printtext(int xorigin, int y, int width, char* text);
 int io_getkey();
 int data_haswonderstage(int p, int wonder, int stage);
 void special_action(int player, int wonder, int stage);
+void clear_history();
+void write_purchase(int player, int era, int card, int type);
+void write_trade(int player, int tradel, int trader);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -82,7 +85,7 @@ void data_distributewonders()
  for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
-  player[0][3][0] = 8; //delete these lines later
+  player[0][3][0] = 6; //delete these lines later
   player[0][3][1] = 1; //this one too!
  }
 }
@@ -127,11 +130,15 @@ void data_endturn()
   turn--;
  if(turn < 0) turn = numplayers-1;
  for(i = 0; i < numplayers; i++) {
-  if(buffer[i][0] == -2) {
+  if(buffer[i][0] == -2) { //build wonder
    player[i][3][2]++;
-  } else {
+   write_purchase(i, -1, -1, 2);
+  } else if(buffer[i][0] != -1) { //bulid card
    for(j = 0; player[i][era][j] != -1; j++); //get free spot in array
-   player[i][era][j] = buffer[i][0]; //build card
+   player[i][era][j] = buffer[i][0];
+   write_purchase(i, era, buffer[i][0], 0);
+  } else { //sold card
+   write_purchase(i, -1, -1, 1);
   }
   player[i][3][3] += buffer[i][1]; //change in gold
   player[i][3][6] += buffer[i][2];

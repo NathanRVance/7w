@@ -9,6 +9,7 @@ int data_numplayers();
 void printmessage(int x, int y, int width);
 int data_geteast(int p);
 int data_getwest(int p);
+int write_history(int player, int x, int y);
 
 int* view_printwonders(int focus, int cursor, int player)
 {
@@ -25,6 +26,7 @@ int* view_printwonders(int focus, int cursor, int player)
    ret = print_wonder(34, 0, p, cursor);
   y = print_wondersmall(x, y, p, focus == p, dir);
  }
+ y = write_history(focus, 0, y);
  printmessage(0, y+2, 35);
  return ret;
 }

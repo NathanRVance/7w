@@ -13,12 +13,13 @@ void data_buildwonder(int p, int card);
 void data_addgold(int amnt, int p);
 int wonder_numstages(int player);
 int weight_buildcard(int era, int card, int player);
-int weight_buildwonder(int player);
+int* weight_buildwonder(int player);
 int* cards_getproduction(int era, int card);
 int* cards_getcost(int era, int card);
 int data_hasbuiltname(int p, int era, int card);
 int* get_intarray(int size);
 int* ai_trade(int player, int era, int card);
+void write_trade(int player, int tradel, int trader);
 
 int* ai_bestcard(int *hand, int player) //return card
 {
@@ -54,22 +55,29 @@ void ai_turn(int player)
 {
  int *bestcard;
  int *hand = data_gethand(player);
- int wonder = 0;
+ int *wonder = get_intarray(4);
+ wonder[0] = 0;
  int i;
  if(data_getwonderstages(player) < wonder_numstages(player))
   wonder = weight_buildwonder(player);
  bestcard = ai_bestcard(hand, player);
- if(bestcard[0] > wonder && bestcard[0] > 0) {
+ if(bestcard[0] > wonder[0] && bestcard[0] > 0) {
   data_build(player, bestcard[1]);
   for(i = 0; i < 2; i++) {
    data_addgold(bestcard[2+i], data_getdir(i, player));
   }
+  write_trade(player, bestcard[2], bestcard[3]);
   data_addgold(bestcard[4] * -1, player);
   return;
  }
  bestcard = ai_bestcard(hand, data_getnext(player));
- if(wonder > 0) {
+ if(wonder[0] > 0) {
   data_buildwonder(player, bestcard[1]);
+  for(i = 0; i < 2; i++) {
+   data_addgold(wonder[1+i], data_getdir(i, player));
+  }
+  write_trade(player, wonder[1], wonder[2]);
+  data_addgold(wonder[3] * -1, player);
   return;
  }
  data_discard(player, bestcard[1]);

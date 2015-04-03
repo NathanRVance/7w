@@ -26,6 +26,8 @@ int trade_routine(int x, int y, int player);
 void trade_commit(int player);
 int data_spendfreebuild();
 int postyn(int x, int y, char *message);
+void write_trade(int player, int tradel, int trader);
+
 void halt();
 
 int player_build(int focus, int cursor, int player, int y)
@@ -54,7 +56,7 @@ int player_build(int focus, int cursor, int player, int y)
    if(data_getnextwonderstage(player) == -1) {
     postmessage("Wonder already complete.");
    } else if(data_canafford(player, data_getwonder(player), data_getnextwonderstage(player))) {
-    data_buildwonder(player, hand[cursor]);
+    data_buildwonder(player, hand[cursor]);   
     return 1;
    } else postmessage("Can't afford this!");
   }
