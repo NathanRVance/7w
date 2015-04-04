@@ -124,6 +124,7 @@ void data_endturn()
    data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
   }
  }
+ for(i = 0; i < 7; i++) turngoldbuffer[i] = 0; //Clear the visible buffer, the real one will be processed later.
  if(era == 0 || era == 2) //pass to the left
   turn++;
  else  //pass to the right
@@ -182,6 +183,7 @@ int data_geteast(int p)
 {
  int ret = p-1;
  if(ret < 0) ret = numplayers-1;
+ return ret;
 }
 
 int data_getwest(int p)

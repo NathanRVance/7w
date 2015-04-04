@@ -66,6 +66,8 @@ void ai_turn(int player)
   for(i = 0; i < 2; i++) {
    data_addgold(bestcard[2+i], data_getdir(i, player));
   }
+  //data_addgold(bestcard[2], data_geteast(player));
+  //data_addgold(bestcard[3], data_getwest(player));
   write_trade(player, bestcard[2], bestcard[3]);
   data_addgold(bestcard[4] * -1, player);
   return;

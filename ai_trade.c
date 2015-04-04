@@ -8,9 +8,10 @@ This class is designed for the sole purpose of analyzing potential transactions 
 int data_getgold(int p);
 int get_trade(int player, int type, int direction);
 int data_canafford(int p, int era, int card);
-void trade_clear(int player);
 void trade_set(int player, int trade[3][GOLD]);
 int* trade_gettradables(int player, int direction);
+int data_gettotvps(int p);
+int data_getdir(int dir, int p);
 
 void ai_cleartrade(int trade[3][GOLD])
 {
@@ -22,8 +23,7 @@ void ai_cleartrade(int trade[3][GOLD])
 
 int recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int card)
 {
- int i, j;
- int tradea, tradeb;
+ int i, j, k;
  if(data_canafford(player, era, card)) {
   if(cost < ret[2] || ret[2] == 0) {
    ret[2] = cost;
@@ -36,15 +36,19 @@ int recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int ca
   }
   return 1; //if we can afford it, don't bother recursing further.
  }
- for(i = 0; i < 2; i++) {
+ for(k = 0; k < 2; k++) {
+  if(data_gettotvps(data_getdir(0, player)) > data_gettotvps(data_getdir(1, player)))
+   i = 0;
+  else i = 1;
+  if(k) i = (i-1)*-1; //The preceeding block selects the weaker neighbor for trade preference.
   for(j = 0; j < GOLD; j++) {
-   if(data_getgold(player) - cost - get_trade(player, j, i) >= 0 && trade_gettradables(player, i)[j] >= trade[i][j]+1) {
-    tradea = trade[i][j]++;
-    tradeb = trade[2][j]++;
+   if(data_getgold(player) - cost - get_trade(player, j, i) >= 0 && trade_gettradables(player, i)[j] - trade[i][j] >= trade[i][j]+1) {
+    trade[i][j]++;
+    trade[2][j]++;
     trade_set(player, trade);
     if(recurse(ret, cost+get_trade(player, j, i), trade, player, era, card)) return 1;
-    trade[i][j] = tradea;
-    trade[2][j] = tradeb;
+    trade[i][j]--;
+    trade[2][j]--;
    }
   }
  }
