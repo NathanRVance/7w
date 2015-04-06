@@ -77,15 +77,6 @@ void special_action(int player, int wonder, int stage)
    if(data_isai(player));
    else Halicarnassus(player);
  }
- if(wonder == 6) { //Babylon
-  if(stage >= 5) {
-   if(data_turnnum() < 6) data_setspecialflag(player);
-   else {
-    if(data_isai(player));
-    else;
-   }
-  }
- }
  if(wonder == 7) { //Olympia
   if(stage == 2) {
    data_setfreebuild(player);

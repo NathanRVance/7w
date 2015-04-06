@@ -24,6 +24,7 @@ void special_action(int player, int wonder, int stage);
 void clear_history();
 void write_purchase(int player, int era, int card, int type);
 void write_trade(int player, int tradel, int trader);
+void player_turn(int player);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -115,21 +116,10 @@ void data_init(int n)
  }
 }
 
-void data_endturn()
-{ //remember, player numbers are arranged clockwise
- totturns++;
+void data_flushbuffers()
+{
  int i, j;
- if(totturns == 6) { //Do this first for some special moves
-  for(i = 0; i < numplayers; i++) {
-   data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
-  }
- }
  for(i = 0; i < 7; i++) turngoldbuffer[i] = 0; //Clear the visible buffer, the real one will be processed later.
- if(era == 0 || era == 2) //pass to the left
-  turn++;
- else  //pass to the right
-  turn--;
- if(turn < 0) turn = numplayers-1;
  for(i = 0; i < numplayers; i++) {
   if(buffer[i][0] == -2) { //build wonder
    player[i][3][2]++;
@@ -143,15 +133,35 @@ void data_endturn()
   }
   player[i][3][3] += buffer[i][1]; //change in gold
   player[i][3][6] += buffer[i][2];
-  if(buffer[i][3]) {
-   buffer[i][3] = 0; //do this early to allow setting of flag as special action
-   special_action(i, data_getwonder(i), data_getwonderside(i)*3+1+data_getwonderstages(i));
-  }
   buffer[i][0] = -1;
   buffer[i][1] = 0;
   buffer[i][2] = 0;
  }
- if(totturns == 6) data_nextera();
+}
+
+void data_endturn()
+{ //remember, player numbers are arranged clockwise
+ totturns++;
+ data_flushbuffers();
+ int i, j;
+ if(totturns == 6) {
+  for(i = 0; i < numplayers; i++) {
+   if(data_getwonder(i) == 6 && data_getwonderside(i)*3+data_getwonderstages(i) >= 5) {
+    player_turn(i);
+    data_flushbuffers();
+   } else data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
+  }
+  data_nextera();
+  return;
+ }
+ for(i = 0; i < numplayers; i++) {
+  special_action(i, data_getwonder(i), data_getwonderside(i)*3+data_getwonderstages(i));
+ }
+ if(era == 0 || era == 2) //pass to the left
+  turn++;
+ else  //pass to the right
+  turn--;
+ if(turn < 0) turn = numplayers-1;
 }
 
 int data_setfreebuild(int p)
