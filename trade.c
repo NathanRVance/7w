@@ -54,12 +54,15 @@ void trade_clear(int player)
 void trade_set(int player, int trade[3][GOLD])
 {
  int i, j;
- for(i = 0; i < 3; i++) {
-  for(j = 0; j < GOLD; j++) {
-   tradebuffer[i][j] = trade[i][j];
-  }
+ for(i = 0; i < 3; i++)
   tradebuffer[i][GOLD] = 0; //we deal with gold in the method that calls this
+ for(i = 0; i < 2; i++) {
+  for(j = 0; j < GOLD; j++) {
+   tradebuffer[i][j] = trade[i][j] * -1;
+  }
  }
+ for(j = 0; j < GOLD; j++)
+  tradebuffer[2][j] = trade[2][j];
 }
 
 //gold amounts relative to player

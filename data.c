@@ -570,15 +570,14 @@ int data_iscouponed(int p, int era, int card)
 
 int data_canafford(int p, int era, int card)
 {
- int ret;
  if(data_iscouponed(p, era, card)) return 1;
  int *cost = cards_getcost(era, card);
+ if(cost[GOLD] > data_getgold(p) && p != hasfreebuild) return 0;
  int i, j, k;
  data_removedefinites(p, cost);
  data_removetraded(p, cost);
  if(data_iszerocost(cost)) return 1;
- ret = recurse(cost, data_getindefinites(p), 0) && (cost[GOLD] <= data_getgold(p));
- if(ret) return 1;
+ if(recurse(cost, data_getindefinites(p), 0)) return 1;
  if(p == hasfreebuild) return 2;
  return 0;
 }
