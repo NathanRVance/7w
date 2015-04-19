@@ -147,7 +147,8 @@ void data_endturn()
  if(totturns == 6) {
   for(i = 0; i < numplayers; i++) {
    if(data_getwonder(i) == 6 && data_getwonderside(i)*3+data_getwonderstages(i) >= 5) {
-    player_turn(i);
+    if(data_isai(i)) ai_turn(i);
+    else player_turn(i);
     data_flushbuffers();
    } else data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
   }

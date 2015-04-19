@@ -110,10 +110,15 @@ void trade_print(int x, int y, int player, int cursorx, int cursory)
  for(i = 0; i < GOLD+1; i++) {
   sprintf(s, "%-7s%2d %c| %-7s %d %c", getname(i), west[i], (cursorx == 1 && cursory == i)? '*' : ' ', getname(i), east[i], (cursorx == 0 && cursory == i)? '*' : ' ');
   y = io_printtext(x, y, width, s);
-  if(tradebuffer[1][i])
-   io_printcolor(x+10, y-1, 31, itoa(west[i]));
-  if(tradebuffer[0][i])
+  if(tradebuffer[1][i]) {
+   if(west[i] < 10)
+    io_printcolor(x+10, y-1, 31, itoa(west[i]));
+   else
+    io_printcolor(x+9, y-1, 31, itoa(west[i]));
+  }
+  if(tradebuffer[0][i]) {
    io_printcolor(x+23, y-1, 31, itoa(east[i]));
+  }
  }
  sprintf(s, "Your gold: %d", data_getgold(player));
  y = io_printtext(x, y, width, s);
