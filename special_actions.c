@@ -28,6 +28,10 @@ void Halicarnassus(int player)
  int bottom = 0;
  while(discards[numcards++] != -1 && numcards < 50);
  numcards /= 2;
+ if(numcards == 0) {
+  postmessage("No cards in the discard pile. Sucks to suck.");
+  return;
+ }
  while(1) {
   view_refresh(focus, cursor, player, 1); 
   switch(io_getkey()) {
@@ -70,16 +74,22 @@ void Halicarnassus(int player)
  }
 }
 
+static int hal = 0;
+static int oly = 0;
+
 void special_action(int player, int wonder, int stage)
 {
  if(wonder == 8) { //Halicarnassus
-  if(stage == 2 || stage == 4 || stage == 5 || stage == 6)
+  if(stage == 2 && hal == 0 || stage == 4 && hal == 0 || stage == 5 && hal == 1 || stage == 6 && hal == 2) {
    if(data_isai(player));
    else Halicarnassus(player);
+   hal++;
+  }
  }
  if(wonder == 7) { //Olympia
-  if(stage == 2) {
+  if(stage == 2 && ! oly) {
    data_setfreebuild(player);
+   oly = 1;
   }
  }
 }

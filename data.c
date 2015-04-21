@@ -86,7 +86,7 @@ void data_distributewonders()
  for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
-  player[0][3][0] = 6; //delete these lines later
+  player[0][3][0] = 8; //delete these lines later
   player[0][3][1] = 1; //this one too!
  }
 }
@@ -151,6 +151,9 @@ void data_endturn()
     else player_turn(i);
     data_flushbuffers();
    } else data_discard((i+numplayers-turn)%numplayers, hands[i][0]);
+  }
+  for(i = 0; i < numplayers; i++) {
+   special_action(i, data_getwonder(i), data_getwonderside(i)*3+data_getwonderstages(i));
   }
   data_nextera();
   return;
