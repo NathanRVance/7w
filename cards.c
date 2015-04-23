@@ -417,7 +417,7 @@ void cards_init()
  cards_setcost(2, 5, ORE, 1);
  cards_setcost(2, 5, WOOD, 1);
  cards_setcost(2, 5, CLOTH, 1);
- cards_setmessage(2, 7, "1 coin and 1 vp for each resource card.");
+ cards_setmessage(2, 5, "1 coin and 1 vp for each resource card.");
  cards_setname(2, 5, "Haven", COMMERCIAL);
 
  cards_setcost(2, 6, STONE, 1);
