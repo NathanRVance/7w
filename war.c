@@ -15,6 +15,9 @@ int military_might(int player)
  sum = 0;
  for(i = 0; built[i] != -1; i += 2)
   sum += cards_getproduction(built[i], built[i+1])[SHIELD];
+ if(data_haswonderstage(player, 3, 2)) sum += 2;
+ if(data_haswonderstage(player, 3, 4)) sum += 1;
+ if(data_haswonderstage(player, 3, 5)) sum += 1;
  return sum;
 }
 

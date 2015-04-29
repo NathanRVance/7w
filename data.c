@@ -86,8 +86,6 @@ void data_distributewonders()
  for(i = 0; i < numplayers; i++) {
   player[i][3][0] = wonders[i];
   player[i][3][1] = rand()%2;
-  player[0][3][0] = 8; //delete these lines later
-  player[0][3][1] = 1; //this one too!
  }
 }
 
