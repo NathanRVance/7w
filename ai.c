@@ -21,13 +21,13 @@ int* get_intarray(int size);
 int* ai_trade(int player, int era, int card);
 void write_trade(int player, int tradel, int trader);
 
-int* ai_bestcard(int *hand, int player) //return card
+void ai_bestcard(int *hand, int player, int *ret)
 {
  int i, temp;
  int max = 0;
  int card = 0;
  int *trade = get_intarray(3);
- static int ret[5];
+ for(i = 0; i < 5; i++) ret[i] = 0;
  for(i = 0; hand[i] != -1 && i < 7; i++) {
   trade[0] = trade[1] = trade[2] = 0;
   temp = weight_buildcard(data_getera(), hand[i], player);
@@ -48,19 +48,18 @@ int* ai_bestcard(int *hand, int player) //return card
  }
  ret[0] = max;
  ret[1] = card;
- return ret;
 }
 
 void ai_turn(int player)
 {
- int *bestcard;
+ int bestcard[5];
  int *hand = data_gethand(player);
  int *wonder = get_intarray(4);
  wonder[0] = 0;
  int i;
  if(data_getwonderstages(player) < wonder_numstages(player))
   wonder = weight_buildwonder(player);
- bestcard = ai_bestcard(hand, player);
+ ai_bestcard(hand, player, bestcard);
  if(bestcard[0] > wonder[0] && bestcard[0] > 0) {
   data_build(player, bestcard[1]);
   for(i = 0; i < 2; i++) {
@@ -70,7 +69,8 @@ void ai_turn(int player)
   data_addgold(bestcard[4] * -1, player);
   return;
  }
- bestcard = ai_bestcard(hand, data_getnext(player));
+ ai_bestcard(hand, data_getnext(player), bestcard);
+ if(bestcard[0] == 0) bestcard[1] = hand[0];
  if(wonder[0] > 0) {
   data_buildwonder(player, bestcard[1]);
   for(i = 0; i < 2; i++) {

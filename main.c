@@ -1,5 +1,6 @@
 #include "7w.h"
 #include <stdlib.h>
+#include <stdio.h>
 
 void tester();
 void io_init();
@@ -23,7 +24,17 @@ void halt()
  exit(0);
 }
 
-static int ais[7] = {0, 1, 1, 1, 1, 1, 1};
+void haltError(char *message, int num)
+{
+ endwin();
+ printf("Something has gone wrong, very wrong.\n");
+ printf(message);
+ printf("\n");
+ printf("Number associated with this error: %d\n", num);
+ exit(1);
+}
+
+static int ais[7] = {1, 1, 1, 1, 1, 1, 1};
 
 main_routine()
 {

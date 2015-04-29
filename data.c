@@ -25,6 +25,7 @@ void clear_history();
 void write_purchase(int player, int era, int card, int type);
 void write_trade(int player, int tradel, int trader);
 void player_turn(int player);
+void haltError(char *message, int num);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -218,10 +219,11 @@ int data_getnext(int p)
 
 int* data_gethand(int p)
 {
- int *ret = get_intarray(7);
+ //int *ret = get_intarray(7);
+ static int ret[7];
  int i;
  for(i = 0; i < 7; i++)
-  ret[i] =  hands[(p+turn)%numplayers][i];
+  ret[i] = hands[(p+turn)%numplayers][i];
  return ret;
 }
 
@@ -335,19 +337,21 @@ void data_deletediscard(int era, int card)
  discards[era][i] = -1;
 }
 
-void data_remove(int p, int card) //as in, removes it from the hand
+int data_remove(int p, int card) //as in, removes it from the hand
 {
  int i;
  int *hand = hands[(p+turn)%numplayers];
- for(i = 0; hand[i] != card; i++);
+ for(i = 0; hand[i] != card && i < 7; i++);
+ if(i == 7) return 1;
  for(; i < 6; i++) hand[i] = hand[i+1];
  hand[6] = -1;
  for(i = 0; i < 7; i++) turngoldbuffer[i] = 0; //end of turn
+ return 0;
 }
 
 void data_discard(int p, int card)
 {
- data_remove(p, card);
+ if(data_remove(p, card)) haltError("Error discarding", totturns);
  int i;
  for(i = 0; discards[era][i] != -1 && i < 49; i++);
  discards[era][i] = card;
@@ -370,7 +374,7 @@ void data_build(int p, int card)
  data_addvps(cards_getproduction(era, card)[VP], p);
  data_addgold(get_special(era, card, p)[1], p);
  data_addgold(cards_getcost(era, card)[GOLD] * -1, p);
- data_remove(p, card);
+ if(data_remove(p, card)) haltError("Error building card", totturns);
 }
 
 void data_buildwonder(int p, int card)
@@ -380,7 +384,7 @@ void data_buildwonder(int p, int card)
  data_addgold(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[GOLD], p);
  data_addvps(cards_getproduction(data_getwonder(p), data_getwonderside(p)*3+1+data_getwonderstages(p))[VP], p);
  data_setspecialflag(p);
- data_remove(p, card);
+ if(data_remove(p, card)) haltError("Error building wonder", totturns);
 }
 
 //0 is non producing, 1 produces one kind of resource, 2 produces multiple resources
