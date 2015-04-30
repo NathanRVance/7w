@@ -8,12 +8,15 @@ This class is designed for the sole purpose of analyzing potential transactions 
 int data_getgold(int p);
 int get_trade(int player, int type, int direction);
 int data_canafford(int p, int era, int card);
+int* data_gettradables(int p);
 void trade_set(int player, int trade[3][GOLD]);
 int* trade_gettradables(int player, int direction);
 int data_gettotvps(int p);
 int data_getdir(int dir, int p);
+int* cards_getcost(int era, int card);
 
 static int bestCost[3];
+static int baseCost[NUMRESOURCES];
 
 void ai_cleartrade(int trade[3][GOLD])
 {
@@ -68,6 +71,7 @@ void recurse(int ret[], int cost, int trade[3][GOLD], int player, int era, int c
   return; //if we can afford it, don't bother recursing further.
  }
  for(j = 0; j < GOLD; j++) {
+  if(baseCost[j] - trade[0][j] - trade[1][j] - data_gettradables(player)[j] <= 0) continue; 
   for(k = 0; k < 1; k++) {
    i = bestNeighbor(player, j);
    if(k) i = (i-1)*-1;
@@ -92,6 +96,7 @@ int* ai_trade(int player, int era, int card)
   ret[i] = 0;
  ai_cleartrade(trade);
  int gold = data_getgold(player);
+ arraycpy(cards_getcost(era, card), baseCost, NUMRESOURCES);
  recurse(ret, 0, trade, player, era, card);
  restoreCost(ret);
  ai_cleartrade(trade);

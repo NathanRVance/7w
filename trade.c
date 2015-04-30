@@ -88,9 +88,9 @@ void trade_commit(int player)
 int* trade_gettradables(int player, int direction)
 {
  int i;
- int *ret;
- if(direction) ret = data_gettradables(data_getwest(player));
- else ret = data_gettradables(data_geteast(player));
+ static int ret[GOLD+1];
+ if(direction) arraycpy(data_gettradables(data_getwest(player)), ret, GOLD+1);
+ else arraycpy(data_gettradables(data_geteast(player)), ret, GOLD+1);
  for(i = 0; i < GOLD; i++)
   ret[i] += tradebuffer[direction][i];
  return ret;
@@ -99,8 +99,10 @@ int* trade_gettradables(int player, int direction)
 void trade_print(int x, int y, int player, int cursorx, int cursory)
 {
  char s[40];
- int *east = trade_gettradables(player, 0);
- int *west = trade_gettradables(player, 1);
+ int east[GOLD+1];
+ arraycpy(trade_gettradables(player, 0), east, GOLD+1);
+ int west[GOLD+1];
+ arraycpy(trade_gettradables(player, 1), west, GOLD+1);
  int width = 28;
  io_printborder(x, y++, width);
  y = io_printtext(x, y, width, "West:      | East:");
@@ -128,7 +130,8 @@ void trade_print(int x, int y, int player, int cursorx, int cursory)
 int trade_change(int cursorx, int cursory, int player, int change)
 {
  int forced = 0;
- int *tradee = trade_gettradables(player, cursorx);
+ int tradee[GOLD+1];
+ arraycpy(trade_gettradables(player, cursorx), tradee, GOLD+1);
  if(tradebuffer[2][cursory]-1 < 0) {
   change = 1;
   forced = 1;

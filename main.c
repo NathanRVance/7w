@@ -34,7 +34,7 @@ void haltError(char *message, int num)
  exit(1);
 }
 
-static int ais[7] = {1, 1, 1, 1, 1, 1, 1};
+static int ais[7] = {0, 1, 1, 1, 1, 1, 1};
 
 main_routine()
 {

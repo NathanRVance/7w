@@ -4,7 +4,6 @@ int data_getdir(int dir, int p); //0 is east, 1 is west, 2 returns player
 int* cards_getproduction(int era, int card);
 int* cards_getcost(int era, int card);
 int data_canafford(int p, int era, int card);
-int* data_getdefinites(int p);
 int** data_getindefinites(int p);
 int* data_gettradables(int p);
 int data_productiontype(int e, int card);
@@ -75,14 +74,15 @@ int weight_resource(int era, int card, int player)
 {
  int weight = 0;
  int *prod = cards_getproduction(era, card);
- int *trade = data_gettradables(player);
+ int trade[GOLD+1];
+ arraycpy(data_gettradables(player), trade, GOLD+1);
  int i, j;
  for(i = 0; i < GOLD; i++) {
   if(prod[i] && !trade[i]) weight += 5;
   if(prod[i] && (i == STONE || i == ORE) && trade[i] < 2) weight += 2;
  }
  for(j = 0; j < 2; j++) {
-  trade = data_gettradables(data_getdir(j, player));
+  arraycpy(data_gettradables(data_getdir(j, player)), trade, GOLD+1);
   for(i = 0; i < GOLD; i++) {
    if(prod[i] && !trade[i]) weight++;
    if(prod[i] && trade[i] && get_trade(player, i, j) == 1) weight--;

@@ -21,10 +21,11 @@ int weight_marketplace(int player)
 {
  int weight = 0;
  int i, j;
- int *prod = data_gettradables(player);
- int *trade;
+ int prod[GOLD+1];
+ arraycpy(data_gettradables(player), prod, GOLD+1);
+ int trade[GOLD+1];
  for(i = 0; i < 2; i++) {
-  trade = data_gettradables(data_getdir(i, player));
+  arraycpy(data_gettradables(data_getdir(i, player)), trade, GOLD+1);
   for(j = CLOTH; j <= PAPER; j++) {
    if(trade[j] && !prod[j]) weight++;
   }

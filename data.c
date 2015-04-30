@@ -8,7 +8,6 @@ int cards_gettype(int era, int card);
 int* cards_getcost(int era, int card);
 int* cards_getproduction(int era, int card);
 int* cards_getcouponed(int era, int card);
-int* get_intarray(int size);
 void shuffle(int *deck, int n);
 int* trade_buffer();
 int* get_special(int era, int card, int player);
@@ -26,6 +25,7 @@ void write_purchase(int player, int era, int card, int type);
 void write_trade(int player, int tradel, int trader);
 void player_turn(int player);
 void haltError(char *message, int num);
+void arraycpy(int *from, int *to, int len);
 
 #define MISC 3
 #define DATAGOLD 0
@@ -219,12 +219,7 @@ int data_getnext(int p)
 
 int* data_gethand(int p)
 {
- //int *ret = get_intarray(7);
- static int ret[7];
- int i;
- for(i = 0; i < 7; i++)
-  ret[i] = hands[(p+turn)%numplayers][i];
- return ret;
+  return hands[(p+turn)%numplayers];
 }
 
 int data_numcards(int p)
@@ -405,7 +400,7 @@ int data_productiontype(int e, int card)
 
 int* data_getdefinites(int p)
 {
- int *ret = get_intarray(GOLD);
+ static int ret[GOLD];
  int i, j, k, *prod;
  for(i = 0; i < GOLD; i++) ret[i] = 0;
  for(i = 0; i < 3; i++) {
@@ -424,7 +419,8 @@ int* data_getdefinites(int p)
 void data_removedefinites(int p, int *cost)
 {
  cost[cards_gettype(data_getwonder(p), 0)]--;
- int *prod = data_getdefinites(p);
+ int prod[GOLD];
+ arraycpy(data_getdefinites(p), prod, GOLD);
  int i;
  for(i = 0; i < GOLD; i++) {
   cost[i] -= prod[i];
@@ -448,7 +444,6 @@ int** data_getindefinites(int p)
  static int dats[4*INDEF];
  static int *ret[INDEF];
  for(i = 0; i < INDEF; i++) {
-  //ret[i] = get_intarray(4);
   ret[i] = &dats[4*i];
   for(j = 0; j < 4; j++)
    ret[i][j] = -1;
@@ -487,7 +482,7 @@ int** data_getindefinites(int p)
 
 int* data_gettradables(int p)
 {
- int *ret = get_intarray(GOLD+1);
+ static int ret[GOLD+1];
  int i, j, k, *prod;
  for(i = 0; i < GOLD+1; i++) ret[i] = 0;
  for(i = 0; i < 3; i++) {
@@ -530,7 +525,7 @@ static int recurse(int *cost, int **indef, int c)
 
 int* data_getbuilt(int p)
 {
- int *ret = get_intarray(43);
+ static int ret[43];
  int type, e, c;
  int i = 0;
  for(type = 0; type <= 7; type++)

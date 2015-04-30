@@ -25,6 +25,7 @@ int* data_getdefinites(int p);
 int** data_getindefinites(int p);
 int data_gettotvps(int p);
 int military_might(int player);
+void arraycpy(int *from, int *to, int len);
 
 int wonder_numstages(int player)
 {
@@ -63,7 +64,8 @@ int* print_wonder(int x, int y, int player, int cursor)
  io_printborder(x, y++, 28);
 
  //Print resource incomes
- int *def = data_getdefinites(player);
+ int def[GOLD];
+ arraycpy(data_getdefinites(player), def, GOLD);
  def[cards_gettype(data_getwonder(player), 0)]++;
  int **indef = data_getindefinites(player);
  y = io_printtext(x, y, 28, "Production:");

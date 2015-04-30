@@ -20,6 +20,7 @@ int data_hasbuiltname(int p, int era, int card);
 int* get_intarray(int size);
 int* ai_trade(int player, int era, int card);
 void write_trade(int player, int tradel, int trader);
+void arraycpy(int *from, int *to, int len);
 
 void ai_bestcard(int *hand, int player, int *ret)
 {
@@ -53,7 +54,8 @@ void ai_bestcard(int *hand, int player, int *ret)
 void ai_turn(int player)
 {
  int bestcard[5];
- int *hand = data_gethand(player);
+ int hand[7];
+ arraycpy(data_gethand(player), hand, 7);
  int *wonder = get_intarray(4);
  wonder[0] = 0;
  int i;

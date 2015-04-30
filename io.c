@@ -14,6 +14,7 @@ char* cards_specialmessage(int era, int card);
 int data_getera();
 int* data_gethand(int p);
 int* get_special(int era, int card, int player);
+void arraycpy(int *from, int *to, int len);
 
 void io_init()
 {
@@ -194,9 +195,9 @@ int print_cards(int x, int y, int *cards, int cursor);
 
 int io_printhand(int x, int y, int player, int cursor, int mode) //mode 0 is normal, 1 is discard search
 {
- int *hand;
- if(mode) hand = data_getdiscards();
- else hand = data_gethand(player);
+ int hand[7];
+ if(mode) arraycpy(data_getdiscards(), hand, 7);
+ else arraycpy(data_gethand(player), hand, 7);
  int i;
  io_printborder(x, y++, 28);
  if(mode) {

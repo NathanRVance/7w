@@ -28,6 +28,12 @@ char* get_chararray(int size)
  return ret;
 }
 
+void arraycpy(int *from, int *to, int len)
+{
+ int i;
+ for(i = 0; i < len; i++) to[i] = from[i];
+}
+
 /* Concatinates a and b and returns a different
    string. Only use when returned string can be recycled. */
 char* cat(char a[], char b[]) {
