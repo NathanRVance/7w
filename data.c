@@ -26,6 +26,7 @@ void write_trade(int player, int tradel, int trader);
 void player_turn(int player);
 void haltError(char *message, int num);
 void arraycpy(int *from, int *to, int len);
+void endgame();
 
 #define MISC 3
 #define DATAGOLD 0
@@ -282,6 +283,11 @@ void data_addvictory(int p)
  if(era == 1) amnt = 3;
  if(era == 2) amnt = 5;
  player[p][3][4] += amnt;
+}
+
+int data_getvictories(int p)
+{
+ return player[p][3][4];
 }
 
 int data_getgold(int p)
@@ -617,6 +623,11 @@ int data_gettotvps(int p)
  return tot;
 }
 
+int* data_getplayerdat(int p)
+{
+ return player[p][3];
+}
+
 int data_potentialvps(int p, int era, int card)
 {
  int i;
@@ -655,5 +666,6 @@ void data_endgame()
  }
  io_printborder(x, y++, width);
  io_getkey();
+ endgame();
  halt();
 }
