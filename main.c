@@ -17,6 +17,7 @@ void data_endturn();
 int data_getera();
 void data_setai(int p);
 int data_isai(int p);
+int* pregame();
 
 void halt()
 {
@@ -33,8 +34,6 @@ void haltError(char *message, int num)
  printf("Number associated with this error: %d\n", num);
  exit(1);
 }
-
-static int ais[7] = {0, 1, 1, 1, 1, 1, 1};
 
 main_routine()
 {
@@ -53,10 +52,11 @@ main()
 {
  io_init();
  cards_init();
- data_init(4);
+ int *setupdat = pregame();
+ data_init(setupdat[7]);
  int i;
  for(i = 0; i < 7; i++) {
-  if(ais[i]) data_setai(i);
+  if(setupdat[i]) data_setai(i);
  }
  main_routine();
  halt();
