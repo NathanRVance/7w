@@ -27,7 +27,7 @@ void pregame_refresh(int* data, int cursor)
 
 int* pregame()
 {
- static int ret[8];
+ static int ret[8] = {0, 1, 1, 1, 1, 1, 1, 1};
  ret[7] = 3;
  int cursor = 0;
  int pregaming = 1;
