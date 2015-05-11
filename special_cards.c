@@ -19,9 +19,10 @@ int cardcounter(int *cards, int type)
 
 int* get_special(int era, int card, int player)
 {
- //formatted vp, gold
- static int ret[2];
+ //formatted vp, gold, isspecial
+ static int ret[3];
  ret[0] = ret[1] = 0;
+ ret[2] = 1;
  switch(era*100+card) {
   case 113: //Vineyard: 1 coin for each resource card of adjacent players or your own.
    ret[1] += cardcounter(data_getbuilt(data_geteast(player)), RESOURCE);
@@ -89,7 +90,7 @@ int* get_special(int era, int card, int player)
    ret[0] += data_getwonderstages(data_getwest(player));
    ret[0] += data_getwonderstages(player);
    break;
-  default: ret[0] = ret[1] = 0;
+  default: ret[0] = ret[1] = ret[2] = 0;
    break;
  }
  return ret;

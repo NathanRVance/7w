@@ -157,6 +157,14 @@ int io_printcard(int x, int y, int era, int card, int player)
  char* message = cards_specialmessage(era, card);
  if(message[0] != '\0')
   y = io_printtext(x, y, 28, message);
+
+ int* special = get_special(era, card, player);
+ if(special[2])
+ { //print special (vp, gold)
+  mvprintw(y++, x, "# In your case, produces:  #");
+  mvprintw(y++, x, "# %2d victory points        #", special[0]);
+  mvprintw(y++, x, "# %2d gold                  #", special[1]);
+ }
  
  int* coupons = cards_getcoupons(era, card);
  if(coupons[1] || coupons[3])
@@ -177,14 +185,6 @@ int io_printcard(int x, int y, int era, int card, int player)
   if(coupons[3])
    io_printname(x, y++, coupons[2], coupons[3]);
  } 
-
- int* special = get_special(era, card, player);
- if(special[0] || special[1])
- { //print special (vp, gold)
-  mvprintw(y++, x, "# In your case, produces:  #");
-  mvprintw(y++, x, "# %2d victory points        #", special[0]);
-  mvprintw(y++, x, "# %2d gold                  #", special[1]);
- }
 
  io_printborder(x, y, 28);
  return y;

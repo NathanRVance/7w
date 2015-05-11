@@ -422,7 +422,7 @@ void cards_init()
 
  cards_setcost(2, 6, STONE, 1);
  cards_setcost(2, 6, GLASS, 1);
- cards_setmessage(2, 7, "1 coin and 1 vp for each commercial card.");
+ cards_setmessage(2, 6, "1 coin and 1 vp for each commercial card.");
  cards_setname(2, 6, "Lighthouse", COMMERCIAL);
 
  cards_setcost(2, 7, CLAY, 2);
