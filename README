@@ -1,2 +1,17 @@
-7w - 7 Wonders for the linux command line
-This is game 2 in a series of games for the linux command line. It is not yet usable. For a more feature complete command line strategy game, check out my other repository 'cettlers'.
+7w
+
+This game is based on the board / card game 7 Wonders. The user interface is entirely made of ascii characters.
+7w was written because linux has a lack of command line strategy games; 7w is intended to be the second in a line of popular board games for the linux/mac command line, the first of which was cettlers, also in my repository.
+
+To install,
+$ cd /directory/with/*.c/files/
+$ cd /Release/
+$ make
+$ cp 7w /directory/in/your/path/
+
+To run execute cettlers simply run
+$ 7w
+
+Or, if you refuse to copy the executable into your path, run
+$ ./7w
+while in the directory containing the compiled binary file.
