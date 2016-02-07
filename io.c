@@ -50,6 +50,14 @@ int io_getkey() {
 	}
 }
 
+static void turn_off_attributes() {
+	int i;
+	for(i = 31; i <= 38; i++)
+		attroff(COLOR_PAIR(i));
+	attroff(A_BLINK);
+	attroff(A_REVERSE);
+}
+
 void io_clearscreen() {
 	clear();
 }
@@ -59,7 +67,8 @@ void io_printname(int x, int y, int era, int card) {
 	attron(COLOR_PAIR(gettypecolor(cards_gettype(era, card))));
 	char array[40];
 	printw("%-23s", cards_getname(era, card, array));
-	attrset(A_NORMAL);
+	//attrset(A_NORMAL);
+	turn_off_attributes();
 	printw(" #");
 }
 
@@ -227,5 +236,6 @@ void io_printplain(int x, int y, char *s) {
 void io_printcolor(int x, int y, int color, char *s) {
 	attron(COLOR_PAIR(color));
 	io_printplain(x, y, s);
-	attrset(A_NORMAL);
+	//attrset(A_NORMAL);
+	turn_off_attributes();
 }

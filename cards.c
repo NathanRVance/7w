@@ -537,7 +537,8 @@ void cards_init() {
 	cards_setcost(2, 25, WOOD, 2);
 	cards_setcost(2, 25, ORE, 2);
 	cards_setcost(2, 25, CLOTH, 1);
-	cards_setmessage(2, 25, "Counts as either a compass, gear or tablet.");
+	cards_setmessage(2, 25,
+			"Counts as either a compass, gear or tablet.");
 	cards_setname(2, 25, "Scientists Guild", GUILD);
 
 	cards_setcost(2, 26, WOOD, 3);
@@ -650,7 +651,7 @@ void cards_init() {
 	cards_setcost(7, 6, ORE, 2);
 	cards_setcost(7, 6, CLOTH, 1);
 	cards_setmessage(7, 6,
-			"Can copy one Guild card build by an adjacent player.");
+			"Can copy one Guild card built by an adjacent player.");
 
 	cards_setname(8, 0, "The Mausoleum of Halicarnassus", CLOTH);
 	cards_setcost(8, 1, CLAY, 2);

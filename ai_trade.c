@@ -2,13 +2,14 @@
 
 /*
  A brief note on why we have separated the functionality of trade.c and ai_trade.c in regards to gold transfer:
- This class is designed for the sole purpose of analyzing potential transactions without committing to any. Therefore, such handy methods as trade_commit are not used.
+ This class is designed for the sole purpose of analyzing potential transactions without committing to any.
+ Therefore, such handy methods as trade_commit are not used.
  */
 
 static int bestCost[3];
 static int baseCost[NUMRESOURCES];
 
-void ai_cleartrade(int trade[3][GOLD]) {
+void clearTrade(int trade[3][GOLD]) {
 	int i, j;
 	for (i = 0; i < 3; i++) {
 		bestCost[i] = 0;
@@ -87,11 +88,11 @@ int* ai_trade(int player, int era, int card, int ret[3]) {
 	int i;
 	for (i = 0; i < 3; i++)
 		ret[i] = 0;
-	ai_cleartrade(trade);
+	clearTrade(trade);
 	cards_getcost(era, card, baseCost);
 	recurse(ret, 0, trade, player, era, card);
 	restoreCost(ret);
-	ai_cleartrade(trade);
+	clearTrade(trade);
 	trade_set(player, trade);
 	return ret;
 }
